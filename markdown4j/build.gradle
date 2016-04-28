@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+group 'net.dgardiner.markdown4j'
+version '1.0'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+}
