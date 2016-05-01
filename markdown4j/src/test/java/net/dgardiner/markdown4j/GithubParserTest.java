@@ -1,7 +1,6 @@
 package net.dgardiner.markdown4j;
 
-import com.github.rjeschke.txtmark.Processor;
-import org.junit.Before;
+import net.dgardiner.markdown4j.flavours.github.GithubDecorator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -57,6 +56,7 @@ public class GithubParserTest {
         this.name = name;
 
         this.processor = new Markdown4jProcessor();
+        this.processor.setDecorator(new GithubDecorator());
     }
 
     @Test

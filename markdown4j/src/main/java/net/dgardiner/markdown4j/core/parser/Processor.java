@@ -1,0 +1,1022 @@
+/*
+ * Copyright (C) 2011 René Jeschke <rene_jeschke@yahoo.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.dgardiner.markdown4j.core.parser;
+
+import net.dgardiner.markdown4j.core.Configuration;
+import net.dgardiner.markdown4j.core.LineType;
+import net.dgardiner.markdown4j.core.LinkRef;
+import net.dgardiner.markdown4j.core.Utils;
+import net.dgardiner.markdown4j.core.enums.BlockType;
+import net.dgardiner.markdown4j.flavours.base.Block;
+import net.dgardiner.markdown4j.flavours.base.Decorator;
+import net.dgardiner.markdown4j.emitters.core.Emitter;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+
+/**
+ * Markdown processor class.
+ * 
+ * <p>
+ * Example usage:
+ * </p>
+ * 
+ * <pre>
+ * <code>String result = Processor.process("This is ***TXTMARK***");
+ * </code>
+ * </pre>
+ * 
+ * @author René Jeschke <rene_jeschke@yahoo.de>
+ */
+public class Processor
+{
+    /** The reader. */
+    private final Reader reader;
+    /** The emitter. */
+    private final Emitter emitter;
+    /** The Configuration. */
+    final Configuration config;
+    /** Extension flag. */
+    private boolean useExtensions = false;
+
+    /**
+     * Constructor.
+     * 
+     * @param reader
+     *            The input reader.
+     */
+    protected Processor(final Reader reader, final Configuration config)
+    {
+        this.reader = reader;
+        this.config = config;
+        this.useExtensions = config.forceExtendedProfile;
+        this.emitter = new Emitter(this.config);
+    }
+
+    /**
+     * Transforms an input stream into Html using the given Configuration.
+     * 
+     * @param reader
+     *            The Reader to process.
+     * @param configuration
+     *            The Configuration.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @since 0.7
+     * @see Configuration
+     */
+    public final static String process(final Reader reader, final Configuration configuration) throws IOException
+    {
+        final Processor p = new Processor(!(reader instanceof BufferedReader) ? new BufferedReader(reader) : reader,
+                configuration);
+        return p.process();
+    }
+
+    /**
+     * Transforms an input String into Html using the given Configuration.
+     * 
+     * @param input
+     *            The String to process.
+     * @param configuration
+     *            The Configuration.
+     * @return The processed String.
+     * @since 0.7
+     * @see Configuration
+     */
+    public final static String process(final String input, final Configuration configuration)
+    {
+        if(input == null || input.isEmpty()) {
+            return "";
+        }
+
+        try
+        {
+            return process(new StringReader(input), configuration);
+        }
+        catch (IOException e)
+        {
+            // This _can never_ happen
+            return null;
+        }
+    }
+
+    /**
+     * Transforms an input file into Html using the given Configuration.
+     * 
+     * @param file
+     *            The File to process.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @since 0.7
+     * @see Configuration
+     */
+    public final static String process(final File file, final Configuration configuration) throws IOException
+    {
+        final FileInputStream input = new FileInputStream(file);
+        final String ret = process(input, configuration);
+        input.close();
+        return ret;
+    }
+
+    /**
+     * Transforms an input stream into Html using the given Configuration.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param configuration
+     *            The Configuration.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @since 0.7
+     * @see Configuration
+     */
+    public final static String process(final InputStream input, final Configuration configuration) throws IOException
+    {
+        final Processor p = new Processor(new BufferedReader(new InputStreamReader(input, configuration.encoding)),
+                configuration);
+        return p.process();
+    }
+
+    /**
+     * Transforms an input String into Html using the default Configuration.
+     * 
+     * @param input
+     *            The String to process.
+     * @return The processed String.
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final String input)
+    {
+        return process(input, Configuration.DEFAULT);
+    }
+
+    /**
+     * Transforms an input String into Html.
+     * 
+     * @param input
+     *            The String to process.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final String input, final boolean safeMode)
+    {
+        return process(input, Configuration.builder().setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input String into Html.
+     * 
+     * @param input
+     *            The String to process.
+     * @param decorator
+     *            The decorator to use.
+     * @return The processed String.
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final String input, final Decorator decorator)
+    {
+        return process(input, Configuration.builder().setDecorator(decorator).build());
+    }
+
+    /**
+     * Transforms an input String into Html.
+     * 
+     * @param input
+     *            The String to process.
+     * @param decorator
+     *            The decorator to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final String input, final Decorator decorator, final boolean safeMode)
+    {
+        return process(input, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input file into Html using the default Configuration.
+     * 
+     * @param file
+     *            The File to process.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file) throws IOException
+    {
+        return process(file, Configuration.DEFAULT);
+    }
+
+    /**
+     * Transforms an input file into Html.
+     * 
+     * @param file
+     *            The File to process.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file, final boolean safeMode) throws IOException
+    {
+        return process(file, Configuration.builder().setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input file into Html.
+     * 
+     * @param file
+     *            The File to process.
+     * @param decorator
+     *            The decorator to use.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file, final Decorator decorator) throws IOException
+    {
+        return process(file, Configuration.builder().setDecorator(decorator).build());
+    }
+
+    /**
+     * Transforms an input file into Html.
+     * 
+     * @param file
+     *            The File to process.
+     * @param decorator
+     *            The decorator to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file, final Decorator decorator, final boolean safeMode)
+            throws IOException
+    {
+        return process(file, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input file into Html.
+     * 
+     * @param file
+     *            The File to process.
+     * @param encoding
+     *            The encoding to use.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file, final String encoding) throws IOException
+    {
+        return process(file, Configuration.builder().setEncoding(encoding).build());
+    }
+
+    /**
+     * Transforms an input file into Html.
+     * 
+     * @param file
+     *            The File to process.
+     * @param encoding
+     *            The encoding to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file, final String encoding, final boolean safeMode)
+            throws IOException
+    {
+        return process(file, Configuration.builder().setEncoding(encoding).setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input file into Html.
+     * 
+     * @param file
+     *            The File to process.
+     * @param encoding
+     *            The encoding to use.
+     * @param decorator
+     *            The decorator to use.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file, final String encoding, final Decorator decorator)
+            throws IOException
+    {
+        return process(file, Configuration.builder().setEncoding(encoding).setDecorator(decorator).build());
+    }
+
+    /**
+     * Transforms an input file into Html.
+     * 
+     * @param file
+     *            The File to process.
+     * @param encoding
+     *            The encoding to use.
+     * @param decorator
+     *            The decorator to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final File file, final String encoding, final Decorator decorator,
+            final boolean safeMode) throws IOException
+    {
+        return process(file, Configuration.builder().setEncoding(encoding).setSafeMode(safeMode)
+                .setDecorator(decorator).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input) throws IOException
+    {
+        return process(input, Configuration.DEFAULT);
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input, final boolean safeMode) throws IOException
+    {
+        return process(input, Configuration.builder().setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param decorator
+     *            The decorator to use.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input, final Decorator decorator) throws IOException
+    {
+        return process(input, Configuration.builder().setDecorator(decorator).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param decorator
+     *            The decorator to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input, final Decorator decorator, final boolean safeMode)
+            throws IOException
+    {
+        return process(input, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param encoding
+     *            The encoding to use.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input, final String encoding) throws IOException
+    {
+        return process(input, Configuration.builder().setEncoding(encoding).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param encoding
+     *            The encoding to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input, final String encoding, final boolean safeMode)
+            throws IOException
+    {
+        return process(input, Configuration.builder().setEncoding(encoding).setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param encoding
+     *            The encoding to use.
+     * @param decorator
+     *            The decorator to use.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input, final String encoding, final Decorator decorator)
+            throws IOException
+    {
+        return process(input, Configuration.builder().setEncoding(encoding).setDecorator(decorator).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param input
+     *            The InputStream to process.
+     * @param encoding
+     *            The encoding to use.
+     * @param decorator
+     *            The decorator to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final InputStream input, final String encoding, final Decorator decorator,
+            final boolean safeMode) throws IOException
+    {
+        return process(input,
+                Configuration.builder().setEncoding(encoding).setDecorator(decorator).setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input stream into Html using the default Configuration.
+     * 
+     * @param reader
+     *            The Reader to process.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final Reader reader) throws IOException
+    {
+        return process(reader, Configuration.DEFAULT);
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param reader
+     *            The Reader to process.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final Reader reader, final boolean safeMode) throws IOException
+    {
+        return process(reader, Configuration.builder().setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param reader
+     *            The Reader to process.
+     * @param decorator
+     *            The decorator to use.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final Reader reader, final Decorator decorator) throws IOException
+    {
+        return process(reader, Configuration.builder().setDecorator(decorator).build());
+    }
+
+    /**
+     * Transforms an input stream into Html.
+     * 
+     * @param reader
+     *            The Reader to process.
+     * @param decorator
+     *            The decorator to use.
+     * @param safeMode
+     *            Set to <code>true</code> to escape unsafe Html tags.
+     * @return The processed String.
+     * @throws IOException
+     *             if an IO error occurs
+     * @see Configuration#DEFAULT
+     */
+    public final static String process(final Reader reader, final Decorator decorator, final boolean safeMode)
+            throws IOException
+    {
+        return process(reader, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
+    }
+
+    /**
+     * Reads all lines from our reader.
+     * <p>
+     * Takes care of markdown link references.
+     * </p>
+     * 
+     * @return A Node containing all lines.
+     * @throws IOException
+     *             If an IO error occurred.
+     */
+    private Node readLines() throws IOException
+    {
+        final Node node = new Node();
+        final StringBuilder sb = new StringBuilder(80);
+        int c = this.reader.read();
+        LinkRef lastLinkRef = null;
+        while(c != -1)
+        {
+            sb.setLength(0);
+            int pos = 0;
+            boolean eol = false;
+            while(!eol)
+            {
+                switch(c)
+                {
+                case -1:
+                    eol = true;
+                    break;
+                case '\n':
+                    c = this.reader.read();
+                    if(c == '\r')
+                        c = this.reader.read();
+                    eol = true;
+                    break;
+                case '\r':
+                    c = this.reader.read();
+                    if(c == '\n')
+                        c = this.reader.read();
+                    eol = true;
+                    break;
+                case '\t':
+                {
+                    final int np = pos + (4 - (pos & 3));
+                    while(pos < np)
+                    {
+                        sb.append(' ');
+                        pos++;
+                    }
+                    c = this.reader.read();
+                    break;
+                }
+                default:
+                    pos++;
+                    sb.append((char)c);
+                    c = this.reader.read();
+                    break;
+                }
+            }
+
+            final Line line = new Line();
+            line.value = sb.toString();
+            line.init();
+
+            // Check for link definitions
+            boolean isLinkRef = false;
+            String id = null, link = null, comment = null;
+            if(!line.isEmpty && line.leading < 4 && line.value.charAt(line.leading) == '[')
+            {
+                line.pos = line.leading + 1;
+                // Read ID up to ']'
+                id = line.readUntil(']');
+                // Is ID valid and are there any more characters?
+                if(id != null && line.pos + 2 < line.value.length())
+                {
+                    // Check for ':' ([...]:...)
+                    if(line.value.charAt(line.pos + 1) == ':')
+                    {
+                        line.pos += 2;
+                        line.skipSpaces();
+                        // Check for link syntax
+                        if(line.value.charAt(line.pos) == '<')
+                        {
+                            line.pos++;
+                            link = line.readUntil('>');
+                            line.pos++;
+                        }
+                        else
+                            link = line.readUntil(' ', '\n');
+
+                        // Is link valid?
+                        if(link != null)
+                        {
+                            // Any non-whitespace characters following?
+                            if(line.skipSpaces())
+                            {
+                                final char ch = line.value.charAt(line.pos);
+                                // Read comment
+                                if(ch == '\"' || ch == '\'' || ch == '(')
+                                {
+                                    line.pos++;
+                                    comment = line.readUntil(ch == '(' ? ')' : ch);
+                                    // Valid linkRef only if comment is valid
+                                    if(comment != null)
+                                        isLinkRef = true;
+                                }
+                            }
+                            else
+                                isLinkRef = true;
+                        }
+                    }
+                }
+            }
+
+            // To make compiler happy: add != null checks
+            if(isLinkRef && id != null && link != null)
+            {
+                if(id.toLowerCase().equals("$profile$"))
+                {
+                    this.emitter.useExtensions = this.useExtensions = link.toLowerCase().equals("extended");
+                    lastLinkRef = null;
+                }
+                else
+                {
+                    // Store linkRef and skip line
+                    final LinkRef lr = new LinkRef(link, comment, comment != null
+                            && (link.length() == 1 && link.charAt(0) == '*'));
+                    this.emitter.addLinkRef(id, lr);
+                    if(comment == null)
+                        lastLinkRef = lr;
+                }
+            }
+            else
+            {
+                comment = null;
+                // Check for multi-line linkRef
+                if(!line.isEmpty && lastLinkRef != null)
+                {
+                    line.pos = line.leading;
+                    final char ch = line.value.charAt(line.pos);
+                    if(ch == '\"' || ch == '\'' || ch == '(')
+                    {
+                        line.pos++;
+                        comment = line.readUntil(ch == '(' ? ')' : ch);
+                    }
+                    if(comment != null)
+                        lastLinkRef.title = comment;
+
+                    lastLinkRef = null;
+                }
+
+                // No multi-line linkRef, store line
+                if(comment == null)
+                {
+                    line.pos = 0;
+                    node.appendLine(line);
+                }
+            }
+        }
+
+        return node;
+    }
+
+    public void recurse(final Node root) { recurse(root, null); }
+
+    /**
+     * Recursively process the given Node.
+     * 
+     * @param root
+     *            The Node to process.
+     * @param parent
+     *            Parent block of recurse operation.
+     */
+    public void recurse(final Node root, Block parent)
+    {
+        Node node;
+        Line line = root.lines;
+
+        // Trigger `Block.onBeforeRecurse()`
+        for(Block block : config.flavour.getBlocks().values()) {
+            block.onBeforeRecurse(this, root, parent);
+        }
+
+//        if(listMode)
+//        {
+//            root.removeIndentation(this.useExtensions);
+//            if(this.useExtensions && root.lines != null && !getLineType(root.lines).getId().equals(LineType.LegacyIds.CODE))
+//            {
+//                root.id = root.lines.stripID();
+//            }
+//        }
+
+        while(line != null && line.isEmpty)
+            line = line.next;
+        if(line == null)
+            return;
+
+        while(line != null)
+        {
+            final LineType type = getLineType(line);
+
+            if(!type.isLegacy()) {
+                // Process modern block
+                Block block = config.flavour.getBlock(type.getId());
+                line = block.process(this, root, line);
+
+                // Process next block
+                continue;
+            }
+
+            // Process legacy block
+            final String typeId = type.getId();
+
+            switch(typeId)
+            {
+            case LineType.LegacyIds.OTHER:
+            {
+                final boolean wasEmpty = line.prevEmpty;
+                boolean acceptedChild = false;
+
+                while(line != null && !line.isEmpty)
+                {
+                    final LineType t = getLineType(line);
+                    final String tId = t.getId();
+
+                    if(parent != null && parent.acceptsChild(line, t)) {
+                        acceptedChild = true;
+                        break;
+                    }
+
+                    if(this.useExtensions && (tId.equals(LineType.LegacyIds.CODE) || tId.equals(LineType.LegacyIds.FENCED_CODE) || tId.equals(LineType.LegacyIds.PLUGIN)))
+                        break;
+
+                    if(tId.equals(LineType.LegacyIds.HEADLINE) || tId.equals(LineType.LegacyIds.HEADLINE1) || tId.equals(LineType.LegacyIds.HEADLINE2) || tId.equals(LineType.LegacyIds.HR)
+                            || tId.equals(LineType.LegacyIds.BQUOTE) || tId.equals(LineType.LegacyIds.XML))
+                        break;
+
+                    line = line.next;
+                }
+                final BlockType bt;
+                if(line != null && !line.isEmpty)
+                {
+                    bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : BlockType.PARAGRAPH;
+                    root.split(line.previous).type = bt;
+                    root.removeLeadingEmptyLines();
+                }
+                else
+                {
+                    bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : BlockType.PARAGRAPH;
+                    root.split(line == null ? root.lineTail : line).type = bt;
+                    root.removeLeadingEmptyLines();
+                }
+                line = root.lines;
+                break;
+            }
+//            case LineType.LegacyIds.CODE:
+//                while(line != null && (line.isEmpty || line.leading > 3))
+//                {
+//                    line = line.next;
+//                }
+//                node = root.split(line != null ? line.previous : root.lineTail);
+//                node.type = BlockType.CODE;
+//                node.removeSurroundingEmptyLines();
+//                break;
+            case LineType.LegacyIds.XML:
+                if(line.previous != null)
+                {
+                    // FIXME ... this looks wrong
+                    root.split(line.previous);
+                }
+                root.split(line.xmlEndLine).type = BlockType.XML;
+                root.removeLeadingEmptyLines();
+                line = root.lines;
+                break;
+            case LineType.LegacyIds.BQUOTE:
+                while(line != null)
+                {
+                    if(!line.isEmpty
+                            && (line.prevEmpty && line.leading == 0 && !getLineType(line).getId().equals(LineType.LegacyIds.BQUOTE)))
+                        break;
+                    line = line.next;
+                }
+                node = root.split(line != null ? line.previous : root.lineTail);
+                node.type = BlockType.BLOCKQUOTE;
+                node.removeSurroundingEmptyLines();
+                node.removeBlockQuotePrefix();
+                this.recurse(node);
+                line = root.lines;
+                break;
+            case LineType.LegacyIds.HR:
+                if(line.previous != null)
+                {
+                    // FIXME ... this looks wrong
+                    root.split(line.previous);
+                }
+                root.split(line).type = BlockType.RULER;
+                root.removeLeadingEmptyLines();
+                line = root.lines;
+                break;
+            case LineType.LegacyIds.FENCED_CODE:
+                line = line.next;
+                while(line != null)
+                {
+                    if(getLineType(line).getId().equals(LineType.LegacyIds.FENCED_CODE))
+                        break;
+                    // TODO ... is this really necessary? Maybe add a special
+                    // flag?
+                    line = line.next;
+                }
+                if(line != null)
+                    line = line.next;
+                node = root.split(line != null ? line.previous : root.lineTail);
+                node.type = BlockType.FENCED_CODE;
+                node.meta = Utils.getMetaFromFence(node.lines.value);
+                node.lines.setEmpty();
+                if(getLineType(node.lineTail).getId().equals(LineType.LegacyIds.FENCED_CODE))
+                    node.lineTail.setEmpty();
+                node.removeSurroundingEmptyLines();
+                break;
+            case LineType.LegacyIds.PLUGIN:
+                line = line.next;
+                while(line != null)
+                {
+                    if(getLineType(line).getId().equals(LineType.LegacyIds.PLUGIN))
+                        break;
+                    // TODO ... is this really necessary? Maybe add a special
+                    // flag?
+                    line = line.next;
+                }
+                if(line != null)
+                    line = line.next;
+                node = root.split(line != null ? line.previous : root.lineTail);
+                node.type = BlockType.PLUGIN;
+                node.meta = Utils.getMetaFromFence(node.lines.value);
+                node.lines.setEmpty();
+                if(getLineType(node.lineTail).getId().equals(LineType.LegacyIds.PLUGIN))
+                    node.lineTail.setEmpty();
+                node.removeSurroundingEmptyLines();
+                break;
+            case LineType.LegacyIds.HEADLINE:
+            case LineType.LegacyIds.HEADLINE1:
+            case LineType.LegacyIds.HEADLINE2:
+                if(line.previous != null)
+                {
+                    root.split(line.previous);
+                }
+                if(!typeId.equals(LineType.LegacyIds.HEADLINE))
+                {
+                    line.next.setEmpty();
+                }
+                node = root.split(line);
+                node.type = BlockType.HEADLINE;
+                if(!typeId.equals(LineType.LegacyIds.HEADLINE))
+                    node.hlDepth = typeId.equals(LineType.LegacyIds.HEADLINE1) ? 1 : 2;
+                if(this.useExtensions)
+                    node.id = node.lines.stripID();
+                node.transfromHeadline();
+                root.removeLeadingEmptyLines();
+                line = root.lines;
+                break;
+//            case LineType.LegacyIds.OLIST:
+//            case LineType.LegacyIds.ULIST:
+//                while(line != null)
+//                {
+//                    final LineType t = getLineType(line);
+//                    final String tId = t.getId();
+//
+//                    if(!line.isEmpty
+//                            && (line.prevEmpty && line.leading == 0 && !(tId.equals(LineType.LegacyIds.OLIST) || tId.equals(LineType.LegacyIds.ULIST))))
+//                        break;
+//                    line = line.next;
+//                }
+//                list = root.split(line != null ? line.previous : root.lineTail);
+//                list.type = typeId.equals(LineType.LegacyIds.OLIST) ? BlockType.ORDERED_LIST : BlockType.UNORDERED_LIST;
+//                list.lines.prevEmpty = false;
+//                list.lineTail.nextEmpty = false;
+//                list.removeSurroundingEmptyLines();
+//                list.lines.prevEmpty = list.lineTail.nextEmpty = false;
+//                initListBlock(list);
+//                node = list.nodes;
+//                while(node != null)
+//                {
+//                    this.recurse(node, true);
+//                    node = node.next;
+//                }
+//                list.expandListParagraphs();
+//                break;
+            default:
+                line = line.next;
+                break;
+            }
+        }
+    }
+
+    public LineType getLineType(Line line) {
+        LineType result = line.getLineType(this.useExtensions);
+
+        if(!result.getId().equals(LineType.LegacyIds.OTHER)) {
+            return result;
+        }
+
+        // TODO iterate over flavour blocks
+        for(Block block : config.flavour.getBlocks().values()) {
+            if(block.isMatch(line)) {
+                return block.getLineType();
+            }
+        }
+
+        return LineType.Legacy.OTHER;
+    }
+
+    /**
+     * Does all the processing.
+     * 
+     * @return The processed String.
+     * @throws IOException
+     *             If an IO error occurred.
+     */
+    private String process() throws IOException
+    {
+        final StringBuilder out = new StringBuilder();
+        final Node parent = this.readLines();
+        parent.removeSurroundingEmptyLines();
+
+        this.recurse(parent);
+        Node node = parent.nodes;
+        while(node != null)
+        {
+            this.emitter.emit(out, node);
+            node = node.next;
+        }
+
+        return out.toString();
+    }
+}
