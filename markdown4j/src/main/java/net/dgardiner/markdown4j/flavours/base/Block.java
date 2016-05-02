@@ -1,5 +1,6 @@
 package net.dgardiner.markdown4j.flavours.base;
 
+import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.LineType;
 import net.dgardiner.markdown4j.core.enums.BlockType;
 import net.dgardiner.markdown4j.core.parser.Line;
@@ -7,16 +8,14 @@ import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
 
 public abstract class Block {
-    private final String id;
     private final LineType lineType;
 
     public Block(String id) {
-        this.id = id;
         this.lineType = new LineType(id);
     }
 
     public String getId() {
-        return id;
+        return lineType.getId();
     }
 
     public LineType getLineType() {
@@ -24,13 +23,16 @@ public abstract class Block {
     }
 
     public abstract boolean isMatch(Line line);
-    public abstract Line process(Processor processor, final Node root, Line line);
+    public abstract Line process(Configuration config, Processor processor, final Node root, Block parent, Line line, LineType lineType);
 
     //
     // Handlers
     //
 
-    public boolean acceptsChild(Line line, LineType type) { return false; }
+    public boolean isAcceptedChild(Line line, LineType lineType) { return false; }
+    public boolean isAcceptedContainer(Line line, LineType lineType) { return false; }
+    public boolean isAcceptedLine(Line line, LineType lineType) { return false; }
+
     public BlockType getChildType(Line line, boolean wasEmpty) { return BlockType.NONE; }
 
     //

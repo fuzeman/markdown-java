@@ -95,7 +95,7 @@ public class GithubDecorator implements Decorator {
     }
 
     //
-    // Headline
+    // HeadlineBlock
     //
 
     @Override

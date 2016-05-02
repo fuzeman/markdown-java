@@ -201,7 +201,7 @@ public class Line
      *            The char to count.
      * @return A value > 0 if this line only consists of 'ch' end spaces.
      */
-    private int countChars(char ch)
+    public int countChars(char ch)
     {
         int count = 0;
         for(int i = 0; i < this.value.length(); i++)
@@ -228,7 +228,7 @@ public class Line
      * @return Number of characters found.
      * @since 0.7
      */
-    private int countCharsStart(char ch)
+    public int countCharsStart(char ch)
     {
         int count = 0;
         for(int i = 0; i < this.value.length(); i++)
@@ -242,133 +242,6 @@ public class Line
                 break;
         }
         return count;
-    }
-
-    /**
-     * Gets this line's type.
-     * 
-     * @param extendedMode
-     *            Whether extended profile is enabled or not
-     * @return The LineTypeLegacy.
-     */
-    public LineType getLineType(boolean extendedMode)
-    {
-        if(this.isEmpty)
-            return LineType.Legacy.EMPTY;
-
-//        if(this.leading > 3)
-//            return LineTypeLegacy.CODE;
-
-        if(this.value.charAt(this.leading) == '#')
-            return LineType.Legacy.HEADLINE;
-
-        if(this.value.charAt(this.leading) == '>')
-            return LineType.Legacy.BQUOTE;
-
-        if(extendedMode)
-        {
-            if(this.value.length() - this.leading - this.trailing > 2 && (this.value.charAt(this.leading) == '`' || this.value.charAt(this.leading) == '~' || this.value.charAt(this.leading) == '%'))
-            {
-                if(this.countCharsStart('`') >= 3)
-                    return LineType.Legacy.FENCED_CODE;
-                
-                if(this.countCharsStart('~') >= 3)
-                    return LineType.Legacy.FENCED_CODE;
-                
-                if(this.countCharsStart('%') >= 3)
-                    return LineType.Legacy.PLUGIN;
-            }
-        }
-
-        if(this.value.length() - this.leading - this.trailing > 2
-                && (this.value.charAt(this.leading) == '*' || this.value.charAt(this.leading) == '-' || this.value
-                        .charAt(this.leading) == '_'))
-        {
-            if(this.countChars(this.value.charAt(this.leading)) >= 3)
-                return LineType.Legacy.HR;
-        }
-
-//        if(this.value.length() - this.leading >= 2 && this.value.charAt(this.leading + 1) == ' ')
-//        {
-//            switch(this.value.charAt(this.leading))
-//            {
-//            case '*':
-//            case '-':
-//            case '+':
-//                return LineTypeLegacy.ULIST;
-//            }
-//        }
-
-//        if(this.value.length() - this.leading >= 3 && Character.isDigit(this.value.charAt(this.leading)))
-//        {
-//            int i = this.leading + 1;
-//            while(i < this.value.length() && Character.isDigit(this.value.charAt(i)))
-//                i++;
-//            if(i + 1 < this.value.length() && this.value.charAt(i) == '.' && this.value.charAt(i + 1) == ' ')
-//                return LineTypeLegacy.OLIST;
-//        }
-
-        if(this.value.charAt(this.leading) == '<')
-        {
-            if(this.checkHTML())
-                return LineType.Legacy.XML;
-        }
-
-        if(this.next != null && !this.next.isEmpty)
-        {
-            if((this.next.value.charAt(0) == '-') && (this.next.countChars('-') > 0))
-                return LineType.Legacy.HEADLINE2;
-            if((this.next.value.charAt(0) == '=') && (this.next.countChars('=') > 0))
-                return LineType.Legacy.HEADLINE1;
-        }
-
-        return LineType.Legacy.OTHER;
-    }
-
-    /**
-     * Reads an XML comment. Sets <code>xmlEndLine</code>.
-     * 
-     * @param firstLine
-     *            The Line to start reading from.
-     * @param start
-     *            The starting position.
-     * @return The new position or -1 if it is no valid comment.
-     */
-    private int readXMLComment(final Line firstLine, final int start)
-    {
-        Line line = firstLine;
-        if(start + 3 < line.value.length())
-        {
-            if(line.value.charAt(2) == '-' && line.value.charAt(3) == '-')
-            {
-                int pos = start + 4;
-                while(line != null)
-                {
-                    while(pos < line.value.length() && line.value.charAt(pos) != '-')
-                    {
-                        pos++;
-                    }
-                    if(pos == line.value.length())
-                    {
-                        line = line.next;
-                        pos = 0;
-                    }
-                    else
-                    {
-                        if(pos + 2 < line.value.length())
-                        {
-                            if(line.value.charAt(pos + 1) == '-' && line.value.charAt(pos + 2) == '>')
-                            {
-                                this.xmlEndLine = line;
-                                return pos + 3;
-                            }
-                        }
-                        pos++;
-                    }
-                }
-            }
-        }
-        return -1;
     }
 
     /**
@@ -458,90 +331,5 @@ public class Line
             }
         }
         return null;
-    }
-
-    /**
-     * Checks for a valid Html block. Sets <code>xmlEndLine</code>.
-     * 
-     * @return <code>true</code> if it is a valid block.
-     */
-    private boolean checkHTML()
-    {
-        final LinkedList<String> tags = new LinkedList<String>();
-        final StringBuilder temp = new StringBuilder();
-        int pos = this.leading;
-        if(this.value.charAt(this.leading + 1) == '!')
-        {
-            if(this.readXMLComment(this, this.leading) > 0)
-                return true;
-        }
-        pos = Utils.readXML(temp, this.value, this.leading, false);
-        String element, tag;
-        if(pos > -1)
-        {
-            element = temp.toString();
-            temp.setLength(0);
-            Utils.getXMLTag(temp, element);
-            tag = temp.toString().toLowerCase();
-            if(!Html.isHtmlBlockElement(tag))
-                return false;
-            if(tag.equals("hr"))
-            {
-                this.xmlEndLine = this;
-                return true;
-            }
-            tags.add(tag);
-
-            Line line = this;
-            while(line != null)
-            {
-                while(pos < line.value.length() && line.value.charAt(pos) != '<')
-                {
-                    pos++;
-                }
-                if(pos >= line.value.length())
-                {
-                    line = line.next;
-                    pos = 0;
-                }
-                else
-                {
-                    temp.setLength(0);
-                    final int newPos = Utils.readXML(temp, line.value, pos, false);
-                    if(newPos > 0)
-                    {
-                        element = temp.toString();
-                        temp.setLength(0);
-                        Utils.getXMLTag(temp, element);
-                        tag = temp.toString().toLowerCase();
-                        if(Html.isHtmlBlockElement(tag) && !tag.equals("hr"))
-                        {
-                            if(element.charAt(1) == '/')
-                            {
-                                if(!tags.getLast().equals(tag))
-                                    return false;
-                                tags.removeLast();
-                            }
-                            else
-                            {
-                                tags.addLast(tag);
-                            }
-                        }
-                        if(tags.size() == 0)
-                        {
-                            this.xmlEndLine = line;
-                            break;
-                        }
-                        pos = newPos;
-                    }
-                    else
-                    {
-                        pos++;
-                    }
-                }
-            }
-            return tags.size() == 0;
-        }
-        return false;
     }
 }

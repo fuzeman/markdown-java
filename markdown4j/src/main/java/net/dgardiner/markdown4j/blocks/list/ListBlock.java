@@ -1,5 +1,6 @@
-package net.dgardiner.markdown4j.flavours.basic.blocks;
+package net.dgardiner.markdown4j.blocks.list;
 
+import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.LineType;
 import net.dgardiner.markdown4j.core.enums.BlockType;
 import net.dgardiner.markdown4j.core.parser.Line;
@@ -8,7 +9,13 @@ import net.dgardiner.markdown4j.core.parser.Processor;
 import net.dgardiner.markdown4j.flavours.base.Block;
 
 public abstract class ListBlock extends Block {
+    private static final LineType[] listTypes = new LineType[] {
+        new LineType("list.ordered"),
+        new LineType("list.unordered")
+    };
+
     private BlockType blockType;
+
 
     public ListBlock(String id, BlockType blockType) {
         super(id);
@@ -17,12 +24,12 @@ public abstract class ListBlock extends Block {
     }
 
     @Override
-    public Line process(Processor processor, final Node root, Line line) {
+    public Line process(Configuration config, Processor processor, final Node root, Block parent, Line line, LineType lineType) {
         Node node, list;
 
         while(line != null)
         {
-            final LineType t = processor.getLineType(line);
+            final LineType t = processor.detectLineType(line);
 
             if(!line.isEmpty && (line.prevEmpty && line.leading == 0 && !t.equals(getLineType())))
                 break;
@@ -58,7 +65,7 @@ public abstract class ListBlock extends Block {
         line = line.next;
         while(line != null)
         {
-            final LineType t = processor.getLineType(line);
+            final LineType t = processor.detectLineType(line);
 
             if(t.getKey().startsWith("list.") || (!line.isEmpty && (line.prevEmpty && line.leading == 0 && !t.getKey().startsWith("list."))))
             {
@@ -70,8 +77,19 @@ public abstract class ListBlock extends Block {
     }
 
     @Override
-    public boolean acceptsChild(Line line, LineType type) {
-        return type.getId().equals(LineType.LegacyIds.OTHER);
+    public boolean isAcceptedChild(Line line, LineType type) {
+        return type.equals(LineType.OTHER);
+    }
+
+    @Override
+    public boolean isAcceptedContainer(Line line, LineType type) {
+        for(LineType lt : listTypes) {
+            if(lt == type) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -91,7 +109,7 @@ public abstract class ListBlock extends Block {
 
         removeIndentation(processor, root);
 
-//        if(this.useExtensions && root.lines != null && !getLineType(root.lines).getId().equals(LineType.LegacyIds.CODE))
+//        if(this.useExtensions && root.lines != null && !detectLineType(root.lines).getId().equals(LineType.LegacyIds.CODE))
 //        {
 //            root.id = root.lines.stripID();
 //        }
@@ -109,7 +127,7 @@ public abstract class ListBlock extends Block {
             }
 
             // Remove indentation from list item  line
-            LineType type = processor.getLineType(line);
+            LineType type = processor.detectLineType(line);
 
             if(type == this.getLineType()) {
                 removeLineIndent(line);

@@ -8,6 +8,7 @@ import java.io.Reader;
 import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.Configuration.Builder;
 import net.dgardiner.markdown4j.core.parser.Processor;
+import net.dgardiner.markdown4j.flavours.base.Flavour;
 import net.dgardiner.markdown4j.flavours.basic.BasicDecorator;
 import net.dgardiner.markdown4j.flavours.base.Decorator;
 import net.dgardiner.markdown4j.emitters.CodeBlockEmitter;
@@ -21,6 +22,7 @@ public class Markdown4jProcessor {
 	private Builder builder;
 	
 	private Decorator decorator;
+	private Flavour flavour;
 	
 	public Markdown4jProcessor() {
 		this.builder = builder();
@@ -49,6 +51,12 @@ public class Markdown4jProcessor {
 	public Markdown4jProcessor setDecorator(Decorator decorator) {
 		this.decorator = decorator;
 		builder.setDecorator(decorator);
+		return this;
+	}
+
+	public Markdown4jProcessor setFlavour(Flavour flavour) {
+		this.flavour = flavour;
+		builder.setFlavour(flavour);
 		return this;
 	}
 

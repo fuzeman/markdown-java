@@ -1,5 +1,6 @@
-package net.dgardiner.markdown4j.flavours.basic.blocks;
+package net.dgardiner.markdown4j.blocks;
 
+import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.LineType;
 import net.dgardiner.markdown4j.core.enums.BlockType;
 import net.dgardiner.markdown4j.core.parser.Line;
@@ -8,7 +9,7 @@ import net.dgardiner.markdown4j.core.parser.Processor;
 import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class CodeBlock extends Block {
-    public static final String ID = "basic:code";
+    public static final String ID = "code";
 
     public CodeBlock() {
         super(ID);
@@ -20,7 +21,12 @@ public class CodeBlock extends Block {
     }
 
     @Override
-    public Line process(Processor processor, final Node root, Line line) {
+    public boolean isAcceptedLine(Line line, LineType lineType) {
+        return lineType == getLineType();
+    }
+
+    @Override
+    public Line process(Configuration config, Processor processor, final Node root, Block parent, Line line, LineType lineType) {
         Node node;
 
         while(line != null && (line.isEmpty || line.leading > 3)) {

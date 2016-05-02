@@ -18,6 +18,8 @@ package net.dgardiner.markdown4j.core.parser;
 import net.dgardiner.markdown4j.core.LineType;
 import net.dgardiner.markdown4j.core.enums.BlockType;
 
+import java.util.logging.Logger;
+
 /**
  * This class represents a block of lines.
  * 

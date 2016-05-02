@@ -1,10 +1,10 @@
-package net.dgardiner.markdown4j.flavours.basic.blocks;
+package net.dgardiner.markdown4j.blocks.list;
 
 import net.dgardiner.markdown4j.core.enums.BlockType;
 import net.dgardiner.markdown4j.core.parser.Line;
 
 public class OrderedListBlock extends ListBlock {
-    public static final String ID = "basic:list.ordered";
+    public static final String ID = "list.ordered";
 
     public OrderedListBlock() {
         super(ID, BlockType.ORDERED_LIST);

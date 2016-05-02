@@ -35,6 +35,8 @@ software, even if advised of the possibility of such damage.
 
 package net.dgardiner.markdown4j;
 
+import static net.dgardiner.markdown4j.core.matchers.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
+import static net.dgardiner.markdown4j.core.matchers.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
@@ -156,6 +158,6 @@ public class MarkupFileTester {
 
     @Test
     public void runTest() {
-        assertEquals(pair.toString(), pair.getResult().trim(), Processor.process(pair.getTest()).trim());
+        assertThat(pair.toString(), Processor.process(pair.getTest()), equalToIgnoringWhiteSpace(pair.getResult()));
     }
 }

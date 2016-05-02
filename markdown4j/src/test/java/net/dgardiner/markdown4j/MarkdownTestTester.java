@@ -35,7 +35,12 @@ software, even if advised of the possibility of such damage.
 
 package net.dgardiner.markdown4j;
 
-import static org.junit.Assert.assertEquals;
+import net.dgardiner.markdown4j.core.matchers.IsEqualIgnoringWhiteSpace;
+import net.dgardiner.markdown4j.core.parser.Processor;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
 import java.io.FileReader;
@@ -46,12 +51,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-import net.dgardiner.markdown4j.core.parser.Processor;
+import static net.dgardiner.markdown4j.core.matchers.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
+import static net.dgardiner.markdown4j.core.matchers.MatcherAssert.assertThat;
 
 @RunWith(value = Parameterized.class)
 public class MarkdownTestTester {
@@ -90,7 +91,8 @@ public class MarkdownTestTester {
         String testText = slurp(dir + File.separator + test + ".text");
         String htmlText = slurp(dir + File.separator + test + ".html");
         String markdownText = Processor.process(testText);
-        assertEquals(test, htmlText.trim(), markdownText.trim());
+
+        assertThat(test, markdownText, equalToIgnoringWhiteSpace(htmlText));
     }
 
     private String slurp(String fileName) throws IOException {

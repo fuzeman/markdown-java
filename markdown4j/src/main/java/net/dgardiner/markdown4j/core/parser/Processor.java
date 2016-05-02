@@ -18,8 +18,6 @@ package net.dgardiner.markdown4j.core.parser;
 import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.LineType;
 import net.dgardiner.markdown4j.core.LinkRef;
-import net.dgardiner.markdown4j.core.Utils;
-import net.dgardiner.markdown4j.core.enums.BlockType;
 import net.dgardiner.markdown4j.flavours.base.Block;
 import net.dgardiner.markdown4j.flavours.base.Decorator;
 import net.dgardiner.markdown4j.emitters.core.Emitter;
@@ -758,9 +756,7 @@ public class Processor
      * @param parent
      *            Parent block of recurse operation.
      */
-    public void recurse(final Node root, Block parent)
-    {
-        Node node;
+    public void recurse(final Node root, Block parent) {
         Line line = root.lines;
 
         // Trigger `Block.onBeforeRecurse()`
@@ -768,232 +764,42 @@ public class Processor
             block.onBeforeRecurse(this, root, parent);
         }
 
-//        if(listMode)
-//        {
-//            root.removeIndentation(this.useExtensions);
-//            if(this.useExtensions && root.lines != null && !getLineType(root.lines).getId().equals(LineType.LegacyIds.CODE))
-//            {
-//                root.id = root.lines.stripID();
-//            }
-//        }
-
         while(line != null && line.isEmpty)
             line = line.next;
+
         if(line == null)
             return;
 
-        while(line != null)
-        {
-            final LineType type = getLineType(line);
+        while(line != null) {
+            // Detect line type
+            final LineType lineType = detectLineType(line);
 
-            if(!type.isLegacy()) {
-                // Process modern block
-                Block block = config.flavour.getBlock(type.getId());
-                line = block.process(this, root, line);
+            // Retrieve matching block
+            Block block = config.flavour.getBlock(lineType.getId());
 
-                // Process next block
-                continue;
-            }
-
-            // Process legacy block
-            final String typeId = type.getId();
-
-            switch(typeId)
-            {
-            case LineType.LegacyIds.OTHER:
-            {
-                final boolean wasEmpty = line.prevEmpty;
-                boolean acceptedChild = false;
-
-                while(line != null && !line.isEmpty)
-                {
-                    final LineType t = getLineType(line);
-                    final String tId = t.getId();
-
-                    if(parent != null && parent.acceptsChild(line, t)) {
-                        acceptedChild = true;
-                        break;
-                    }
-
-                    if(this.useExtensions && (tId.equals(LineType.LegacyIds.CODE) || tId.equals(LineType.LegacyIds.FENCED_CODE) || tId.equals(LineType.LegacyIds.PLUGIN)))
-                        break;
-
-                    if(tId.equals(LineType.LegacyIds.HEADLINE) || tId.equals(LineType.LegacyIds.HEADLINE1) || tId.equals(LineType.LegacyIds.HEADLINE2) || tId.equals(LineType.LegacyIds.HR)
-                            || tId.equals(LineType.LegacyIds.BQUOTE) || tId.equals(LineType.LegacyIds.XML))
-                        break;
-
-                    line = line.next;
-                }
-                final BlockType bt;
-                if(line != null && !line.isEmpty)
-                {
-                    bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : BlockType.PARAGRAPH;
-                    root.split(line.previous).type = bt;
-                    root.removeLeadingEmptyLines();
-                }
-                else
-                {
-                    bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : BlockType.PARAGRAPH;
-                    root.split(line == null ? root.lineTail : line).type = bt;
-                    root.removeLeadingEmptyLines();
-                }
-                line = root.lines;
-                break;
-            }
-//            case LineType.LegacyIds.CODE:
-//                while(line != null && (line.isEmpty || line.leading > 3))
-//                {
-//                    line = line.next;
-//                }
-//                node = root.split(line != null ? line.previous : root.lineTail);
-//                node.type = BlockType.CODE;
-//                node.removeSurroundingEmptyLines();
-//                break;
-            case LineType.LegacyIds.XML:
-                if(line.previous != null)
-                {
-                    // FIXME ... this looks wrong
-                    root.split(line.previous);
-                }
-                root.split(line.xmlEndLine).type = BlockType.XML;
-                root.removeLeadingEmptyLines();
-                line = root.lines;
-                break;
-            case LineType.LegacyIds.BQUOTE:
-                while(line != null)
-                {
-                    if(!line.isEmpty
-                            && (line.prevEmpty && line.leading == 0 && !getLineType(line).getId().equals(LineType.LegacyIds.BQUOTE)))
-                        break;
-                    line = line.next;
-                }
-                node = root.split(line != null ? line.previous : root.lineTail);
-                node.type = BlockType.BLOCKQUOTE;
-                node.removeSurroundingEmptyLines();
-                node.removeBlockQuotePrefix();
-                this.recurse(node);
-                line = root.lines;
-                break;
-            case LineType.LegacyIds.HR:
-                if(line.previous != null)
-                {
-                    // FIXME ... this looks wrong
-                    root.split(line.previous);
-                }
-                root.split(line).type = BlockType.RULER;
-                root.removeLeadingEmptyLines();
-                line = root.lines;
-                break;
-            case LineType.LegacyIds.FENCED_CODE:
+            if(block != null) {
+                // Process block
+                line = block.process(config, this, root, parent, line, lineType);
+            } else {
+                // No matching block found
                 line = line.next;
-                while(line != null)
-                {
-                    if(getLineType(line).getId().equals(LineType.LegacyIds.FENCED_CODE))
-                        break;
-                    // TODO ... is this really necessary? Maybe add a special
-                    // flag?
-                    line = line.next;
-                }
-                if(line != null)
-                    line = line.next;
-                node = root.split(line != null ? line.previous : root.lineTail);
-                node.type = BlockType.FENCED_CODE;
-                node.meta = Utils.getMetaFromFence(node.lines.value);
-                node.lines.setEmpty();
-                if(getLineType(node.lineTail).getId().equals(LineType.LegacyIds.FENCED_CODE))
-                    node.lineTail.setEmpty();
-                node.removeSurroundingEmptyLines();
-                break;
-            case LineType.LegacyIds.PLUGIN:
-                line = line.next;
-                while(line != null)
-                {
-                    if(getLineType(line).getId().equals(LineType.LegacyIds.PLUGIN))
-                        break;
-                    // TODO ... is this really necessary? Maybe add a special
-                    // flag?
-                    line = line.next;
-                }
-                if(line != null)
-                    line = line.next;
-                node = root.split(line != null ? line.previous : root.lineTail);
-                node.type = BlockType.PLUGIN;
-                node.meta = Utils.getMetaFromFence(node.lines.value);
-                node.lines.setEmpty();
-                if(getLineType(node.lineTail).getId().equals(LineType.LegacyIds.PLUGIN))
-                    node.lineTail.setEmpty();
-                node.removeSurroundingEmptyLines();
-                break;
-            case LineType.LegacyIds.HEADLINE:
-            case LineType.LegacyIds.HEADLINE1:
-            case LineType.LegacyIds.HEADLINE2:
-                if(line.previous != null)
-                {
-                    root.split(line.previous);
-                }
-                if(!typeId.equals(LineType.LegacyIds.HEADLINE))
-                {
-                    line.next.setEmpty();
-                }
-                node = root.split(line);
-                node.type = BlockType.HEADLINE;
-                if(!typeId.equals(LineType.LegacyIds.HEADLINE))
-                    node.hlDepth = typeId.equals(LineType.LegacyIds.HEADLINE1) ? 1 : 2;
-                if(this.useExtensions)
-                    node.id = node.lines.stripID();
-                node.transfromHeadline();
-                root.removeLeadingEmptyLines();
-                line = root.lines;
-                break;
-//            case LineType.LegacyIds.OLIST:
-//            case LineType.LegacyIds.ULIST:
-//                while(line != null)
-//                {
-//                    final LineType t = getLineType(line);
-//                    final String tId = t.getId();
-//
-//                    if(!line.isEmpty
-//                            && (line.prevEmpty && line.leading == 0 && !(tId.equals(LineType.LegacyIds.OLIST) || tId.equals(LineType.LegacyIds.ULIST))))
-//                        break;
-//                    line = line.next;
-//                }
-//                list = root.split(line != null ? line.previous : root.lineTail);
-//                list.type = typeId.equals(LineType.LegacyIds.OLIST) ? BlockType.ORDERED_LIST : BlockType.UNORDERED_LIST;
-//                list.lines.prevEmpty = false;
-//                list.lineTail.nextEmpty = false;
-//                list.removeSurroundingEmptyLines();
-//                list.lines.prevEmpty = list.lineTail.nextEmpty = false;
-//                initListBlock(list);
-//                node = list.nodes;
-//                while(node != null)
-//                {
-//                    this.recurse(node, true);
-//                    node = node.next;
-//                }
-//                list.expandListParagraphs();
-//                break;
-            default:
-                line = line.next;
-                break;
             }
         }
     }
 
-    public LineType getLineType(Line line) {
-        LineType result = line.getLineType(this.useExtensions);
+    public LineType detectLineType(Line line) {
+        if(line.isEmpty)
+            return LineType.EMPTY;
 
-        if(!result.getId().equals(LineType.LegacyIds.OTHER)) {
-            return result;
-        }
-
-        // TODO iterate over flavour blocks
+        // Try match line against available blocks
         for(Block block : config.flavour.getBlocks().values()) {
             if(block.isMatch(line)) {
                 return block.getLineType();
             }
         }
 
-        return LineType.Legacy.OTHER;
+        // Unable to match line against anything
+        return LineType.OTHER;
     }
 
     /**
