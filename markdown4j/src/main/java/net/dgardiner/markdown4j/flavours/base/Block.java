@@ -7,11 +7,17 @@ import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
 
-public abstract class Block {
+public abstract class Block implements Comparable<Block> {
     private final LineType lineType;
+    private final Integer priority;
 
     public Block(String id) {
+        this(id, 0);
+    }
+
+    public Block(String id, Integer priority) {
         this.lineType = new LineType(id);
+        this.priority = priority;
     }
 
     public String getId() {
@@ -41,4 +47,17 @@ public abstract class Block {
 
     public void onBeforeRecurse(Processor processor, final Node root, Block parent) { }
     public void onAfterRecurse(Processor processor, final Node root, Block parent) { }
+
+    //
+    // Comparable
+    //
+
+
+    @Override
+    public int compareTo(Block other) {
+        if(other == null)
+            throw new ClassCastException("Block object was expected");
+
+        return this.priority - ((Block) other).priority;
+    }
 }

@@ -17,8 +17,8 @@ public abstract class ListBlock extends Block {
     private BlockType blockType;
 
 
-    public ListBlock(String id, BlockType blockType) {
-        super(id);
+    public ListBlock(String id, Integer priority, BlockType blockType) {
+        super(id, priority);
 
         this.blockType = blockType;
     }

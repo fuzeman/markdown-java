@@ -10,9 +10,10 @@ import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class OtherBlock extends Block {
     public static final String ID = "other";
+    public static final Integer PRIORITY = Integer.MAX_VALUE;
 
     public OtherBlock() {
-        super(ID);
+        super(ID, PRIORITY);
     }
 
     @Override

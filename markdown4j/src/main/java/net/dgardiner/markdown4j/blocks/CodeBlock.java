@@ -10,9 +10,10 @@ import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class CodeBlock extends Block {
     public static final String ID = "code";
+    public static final Integer PRIORITY = -2000;
 
     public CodeBlock() {
-        super(ID);
+        super(ID, PRIORITY);
     }
 
     @Override

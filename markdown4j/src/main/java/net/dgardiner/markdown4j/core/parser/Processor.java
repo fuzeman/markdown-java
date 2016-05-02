@@ -792,7 +792,7 @@ public class Processor
             return LineType.EMPTY;
 
         // Try match line against available blocks
-        for(Block block : config.flavour.getBlocks().values()) {
+        for(Block block : config.flavour.getBlocksOrdered()) {
             if(block.isMatch(line)) {
                 return block.getLineType();
             }

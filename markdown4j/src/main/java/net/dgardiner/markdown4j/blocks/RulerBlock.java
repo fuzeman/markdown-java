@@ -10,6 +10,7 @@ import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class RulerBlock extends Block {
     public static final String ID = "ruler";
+    public static final Integer PRIORITY = 1000;
 
     public RulerBlock() {
         super(ID);

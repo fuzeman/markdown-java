@@ -14,9 +14,10 @@ import java.util.LinkedList;
 
 public class XmlBlock extends Block {
     public static final String ID = "xml";
+    public static final Integer PRIORITY = 1000;
 
     public XmlBlock() {
-        super(ID);
+        super(ID, PRIORITY);
     }
 
     @Override

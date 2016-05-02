@@ -5,9 +5,10 @@ import net.dgardiner.markdown4j.core.parser.Line;
 
 public class OrderedListBlock extends ListBlock {
     public static final String ID = "list.ordered";
+    public static final Integer PRIORITY = 2100;
 
     public OrderedListBlock() {
-        super(ID, BlockType.ORDERED_LIST);
+        super(ID, PRIORITY, BlockType.ORDERED_LIST);
     }
 
     @Override
