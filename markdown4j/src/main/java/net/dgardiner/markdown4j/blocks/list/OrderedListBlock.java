@@ -5,7 +5,7 @@ import net.dgardiner.markdown4j.core.parser.Line;
 
 public class OrderedListBlock extends ListBlock {
     public static final String ID = "list.ordered";
-    public static final Integer PRIORITY = 2100;
+    public static final Integer PRIORITY = 400;
 
     public OrderedListBlock() {
         super(ID, PRIORITY, BlockType.ORDERED_LIST);

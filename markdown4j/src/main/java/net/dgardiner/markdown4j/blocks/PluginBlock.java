@@ -11,7 +11,7 @@ import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class PluginBlock extends Block {
     public static final String ID = "plugin";
-    public static final Integer PRIORITY = -100;
+    public static final Integer PRIORITY = 5000;
 
     public PluginBlock() {
         super(ID, PRIORITY);

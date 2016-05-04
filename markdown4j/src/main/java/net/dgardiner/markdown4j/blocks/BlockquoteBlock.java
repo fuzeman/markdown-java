@@ -10,9 +10,10 @@ import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class BlockquoteBlock extends Block {
     public static final String ID = "blockquote";
+    public static final Integer PRIORITY = 3000;
 
     public BlockquoteBlock() {
-        super(ID);
+        super(ID, PRIORITY);
     }
 
     @Override

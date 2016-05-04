@@ -11,7 +11,7 @@ import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class FencedCodeBlock extends Block {
     public static final String ID = "fenced-code";
-    public static final Integer PRIORITY = -100;
+    public static final Integer PRIORITY = 4000;
 
     public FencedCodeBlock() {
         super(ID, PRIORITY);

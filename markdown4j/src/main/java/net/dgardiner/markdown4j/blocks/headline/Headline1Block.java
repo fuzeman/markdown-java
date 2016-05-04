@@ -5,9 +5,10 @@ import net.dgardiner.markdown4j.core.parser.Line;
 
 public class Headline1Block extends HeadlineBlock {
     public static final String ID = "headline.1";
+    public static final Integer PRIORITY = 10000;
 
     public Headline1Block() {
-        super(ID);
+        super(ID, PRIORITY);
     }
 
     @Override

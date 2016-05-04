@@ -10,11 +10,12 @@ import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class HeadlineBlock extends Block {
     public static final String ID = "headline";
+    public static final Integer PRIORITY = 2000;
 
     public HeadlineBlock() {
-        super(ID);
+        super(ID, PRIORITY);
     }
-    public HeadlineBlock(String id) { super(id); }
+    public HeadlineBlock(String id, Integer priority) { super(id, priority); }
 
     @Override
     public boolean isMatch(Line line) {

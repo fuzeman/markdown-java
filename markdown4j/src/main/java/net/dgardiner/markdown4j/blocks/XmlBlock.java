@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 public class XmlBlock extends Block {
     public static final String ID = "xml";
-    public static final Integer PRIORITY = 1000;
+    public static final Integer PRIORITY = 9000;
 
     public XmlBlock() {
         super(ID, PRIORITY);
