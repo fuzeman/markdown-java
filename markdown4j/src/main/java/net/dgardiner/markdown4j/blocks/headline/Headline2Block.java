@@ -2,6 +2,7 @@ package net.dgardiner.markdown4j.blocks.headline;
 
 import net.dgardiner.markdown4j.core.LineType;
 import net.dgardiner.markdown4j.core.parser.Line;
+import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class Headline2Block extends HeadlineBlock {
     public static final String ID = "headline.2";
@@ -12,7 +13,7 @@ public class Headline2Block extends HeadlineBlock {
     }
 
     @Override
-    public boolean isMatch(Line line) {
+    public boolean isMatch(Line line, Block parent) {
         if(line.next != null && !line.next.isEmpty) {
             if((line.next.value.charAt(0) == '-') && (line.next.countChars('-') > 0))
                 return true;

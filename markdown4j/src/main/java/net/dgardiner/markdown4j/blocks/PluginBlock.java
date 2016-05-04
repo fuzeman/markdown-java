@@ -18,7 +18,7 @@ public class PluginBlock extends Block {
     }
 
     @Override
-    public boolean isMatch(Line line) {
+    public boolean isMatch(Line line, Block parent) {
         if(line.value.length() - line.leading - line.trailing > 2 && (line.value.charAt(line.leading) == '%')) {
             if(line.countCharsStart('%') >= 3)
                 return true;

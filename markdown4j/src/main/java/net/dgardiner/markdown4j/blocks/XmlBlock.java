@@ -21,7 +21,7 @@ public class XmlBlock extends Block {
     }
 
     @Override
-    public boolean isMatch(Line line) {
+    public boolean isMatch(Line line, Block parent) {
         if(line.value.charAt(line.leading) == '<') {
             if(this.checkHTML(line))
                 return true;

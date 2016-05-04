@@ -42,4 +42,9 @@ public class LineType {
     public String getId() {
         return group + ":" + key;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof LineType && this.getId().equals(((LineType) o).getId());
+    }
 }

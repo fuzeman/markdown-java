@@ -18,7 +18,7 @@ public class HeadlineBlock extends Block {
     public HeadlineBlock(String id, Integer priority) { super(id, priority); }
 
     @Override
-    public boolean isMatch(Line line) {
+    public boolean isMatch(Line line, Block parent) {
         return line.value.charAt(line.leading) == '#';
     }
 

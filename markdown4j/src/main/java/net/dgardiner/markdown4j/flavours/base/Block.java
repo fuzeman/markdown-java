@@ -28,7 +28,7 @@ public abstract class Block implements Comparable<Block> {
         return lineType;
     }
 
-    public abstract boolean isMatch(Line line);
+    public abstract boolean isMatch(Line line, Block parent);
     public abstract Line process(Configuration config, Processor processor, final Node root, Block parent, Line line, LineType lineType);
 
     //

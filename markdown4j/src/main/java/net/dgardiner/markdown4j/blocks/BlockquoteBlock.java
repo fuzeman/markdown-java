@@ -17,7 +17,7 @@ public class BlockquoteBlock extends Block {
     }
 
     @Override
-    public boolean isMatch(Line line) {
+    public boolean isMatch(Line line, Block parent) {
         return line.value.charAt(line.leading) == '>';
     }
 

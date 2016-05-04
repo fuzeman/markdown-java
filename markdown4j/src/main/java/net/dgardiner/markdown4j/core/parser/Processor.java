@@ -772,7 +772,7 @@ public class Processor
 
         while(line != null) {
             // Detect line type
-            final LineType lineType = detectLineType(line);
+            final LineType lineType = detectLineType(line, parent);
 
             // Retrieve matching block
             Block block = config.flavour.getBlock(lineType.getId());
@@ -788,12 +788,16 @@ public class Processor
     }
 
     public LineType detectLineType(Line line) {
+        return detectLineType(line, null);
+    }
+
+    public LineType detectLineType(Line line, Block parent) {
         if(line.isEmpty)
             return LineType.EMPTY;
 
         // Try match line against available blocks
         for(Block block : config.flavour.getBlocksOrdered()) {
-            if(block.isMatch(line)) {
+            if(block.isMatch(line, parent)) {
                 return block.getLineType();
             }
         }

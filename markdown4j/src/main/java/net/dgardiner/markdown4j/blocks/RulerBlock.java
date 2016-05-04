@@ -17,7 +17,7 @@ public class RulerBlock extends Block {
     }
 
     @Override
-    public boolean isMatch(Line line) {
+    public boolean isMatch(Line line, Block parent) {
         if(line.value.length() - line.leading - line.trailing > 2
                 && (line.value.charAt(line.leading) == '*' || line.value.charAt(line.leading) == '-' || line.value
                 .charAt(line.leading) == '_'))

@@ -17,7 +17,7 @@ public class OtherBlock extends Block {
     }
 
     @Override
-    public boolean isMatch(Line line) {
+    public boolean isMatch(Line line, Block parent) {
         return false;
     }
 
@@ -28,7 +28,7 @@ public class OtherBlock extends Block {
 
         while(line != null && !line.isEmpty)
         {
-            final LineType t = processor.detectLineType(line);
+            final LineType t = processor.detectLineType(line, parent);
             final String tId = t.getId();
 
             // Check if parent will accept this child

@@ -164,3 +164,17 @@ Violets are blue.
 <p>Roses are red,<br  />
 Violets are blue.</p>
 
+# Test 15 (List padding)
+ * First
+   * Second
+ * Third
+
+# Result 15
+<ul>
+<li>First<ul>
+<li>Second</li>
+</ul>
+</li>
+<li>Third</li>
+</ul>
+
