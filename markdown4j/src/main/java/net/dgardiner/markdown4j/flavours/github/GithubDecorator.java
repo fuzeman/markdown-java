@@ -236,6 +236,32 @@ public class GithubDecorator implements Decorator {
     }
 
     //
+    // Emoji
+    //
+
+    public void emoji(StringBuilder out, String key) {
+        out.append("<img class=\"emoji\" title=\":")
+           .append(key)
+           .append(":\" alt=\":")
+           .append(key)
+           .append(":\" src=\"https://assets.github.com/images/icons/emoji/")
+           .append(key)
+           .append(".png\" height=\"20\" width=\"20\" align=\"absmiddle\">");
+    }
+
+    //
+    // Username
+    //
+
+    public void username(StringBuilder out, String username) {
+        out.append("<a href=\"https://github.com/")
+           .append(username)
+           .append("\" class=\"user-mention\">@")
+           .append(username)
+           .append("</a>");
+    }
+
+    //
     // Link
     //
 
