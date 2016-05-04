@@ -1,13 +1,12 @@
 package net.dgardiner.markdown4j.core;
 
-public class LineType {
-    public static final LineType EMPTY = new LineType("empty");
-    public static final LineType OTHER = new LineType("other");
+public class TokenType {
+    public static final TokenType NONE = new TokenType("none");
 
     private String group;
     private String key;
 
-    public LineType(String id) {
+    public TokenType(String id) {
         String[] fragments = id.split(":");
 
         if(fragments.length == 2) {
@@ -22,7 +21,7 @@ public class LineType {
         }
     }
 
-    public LineType(String group, String key) {
+    public TokenType(String group, String key) {
         this.group = group;
         this.key = key;
     }
@@ -43,6 +42,6 @@ public class LineType {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof LineType && this.getId().equals(((LineType) o).getId());
+        return o instanceof TokenType && this.getId().equals(((TokenType) o).getId());
     }
 }

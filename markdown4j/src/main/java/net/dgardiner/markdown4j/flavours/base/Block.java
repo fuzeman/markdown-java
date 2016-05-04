@@ -58,6 +58,6 @@ public abstract class Block implements Comparable<Block> {
         if(other == null)
             throw new ClassCastException("Block object was expected");
 
-        return this.priority - ((Block) other).priority;
+        return this.priority - other.priority;
     }
 }

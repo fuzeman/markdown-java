@@ -26,6 +26,7 @@ import net.dgardiner.markdown4j.core.*;
 import net.dgardiner.markdown4j.core.enums.MarkToken;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.plugins.core.Plugin;
+import net.dgardiner.markdown4j.tokens.core.Token;
 
 
 /**
@@ -223,13 +224,13 @@ public class Emitter
      *            The token to find.
      * @return The position of the token or -1 if none could be found.
      */
-    private int findToken(final String in, int start, MarkToken token)
+    private int findToken(final String in, int start, TokenType token)
     {
         int pos = start;
-        while(pos < in.length())
-        {
+        while(pos < in.length()) {
             if(this.getToken(in, pos) == token)
                 return pos;
+
             pos++;
         }
         return -1;
@@ -248,10 +249,10 @@ public class Emitter
      *            Either LINK or IMAGE.
      * @return The new position or -1 if there is no valid markdown link.
      */
-    private int checkLink(final StringBuilder out, final String in, int start, MarkToken token)
+    private int checkLink(final StringBuilder out, final String in, int start, TokenType token)
     {
         boolean isAbbrev = false;
-        int pos = start + (token == MarkToken.LINK ? 1 : 2);
+        int pos = start + (token.equals(MarkToken.LINK) ? 1 : 2);
         final StringBuilder temp = new StringBuilder();
 
         temp.setLength(0);
@@ -538,27 +539,49 @@ public class Emitter
      *            Input String.
      * @param start
      *            Start position.
-     * @param token
+     * @param tokenType
      *            The matching Token (for e.g. '*')
      * @return The position of the matching Token or -1 if token was NONE or no
      *         Token could be found.
      */
-    private int recursiveEmitLine(final StringBuilder out, final String in, int start, MarkToken token)
+    public int recursiveEmitLine(final StringBuilder out, final String in, int start, TokenType tokenType)
     {
         int pos = start, a, b;
         final StringBuilder temp = new StringBuilder();
         while(pos < in.length())
         {
-            final MarkToken mt = this.getToken(in, pos);
-            if(token != MarkToken.NONE
-                    && (mt == token || token == MarkToken.EM_STAR && mt == MarkToken.STRONG_STAR || token == MarkToken.EM_UNDERSCORE
-                            && mt == MarkToken.STRONG_UNDERSCORE))
+            // Detect token type
+            final TokenType mt = this.getToken(in, pos);
+
+            // Retrieve modern token handler
+            Token token = null;
+
+            if(!mt.isLegacy()) {
+                token = config.flavour.getToken(mt.getId());
+
+                if (token == null) {
+                    // Unable to find token
+                    continue;
+                }
+            }
+
+            // Check if we should finish processing
+            if(!tokenType.equals(MarkToken.NONE) && (mt.equals(tokenType) || (token != null && token.isProcessed(tokenType, mt))))
                 return pos;
 
-            switch(mt)
+            // Process modern token
+            if(token != null) {
+                pos = token.process(config, this, out, in, pos, mt);
+
+                pos++;
+                continue;
+            }
+
+            // Process legacy token
+            switch(mt.getId())
             {
-            case IMAGE:
-            case LINK:
+            case MarkToken.Ids.IMAGE:
+            case MarkToken.Ids.LINK:
                 temp.setLength(0);
                 b = this.checkLink(temp, in, pos, mt);
                 if(b > 0)
@@ -571,39 +594,7 @@ public class Emitter
                     out.append(in.charAt(pos));
                 }
                 break;
-            case EM_STAR:
-            case EM_UNDERSCORE:
-                temp.setLength(0);
-                b = this.recursiveEmitLine(temp, in, pos + 1, mt);
-                if(b > 0)
-                {
-                    this.config.decorator.openEmphasis(out);
-                    out.append(temp);
-                    this.config.decorator.closeEmphasis(out);
-                    pos = b;
-                }
-                else
-                {
-                    out.append(in.charAt(pos));
-                }
-                break;
-            case STRONG_STAR:
-            case STRONG_UNDERSCORE:
-                temp.setLength(0);
-                b = this.recursiveEmitLine(temp, in, pos + 2, mt);
-                if(b > 0)
-                {
-                    this.config.decorator.openStrong(out);
-                    out.append(temp);
-                    this.config.decorator.closeStrong(out);
-                    pos = b + 1;
-                }
-                else
-                {
-                    out.append(in.charAt(pos));
-                }
-                break;
-            case STRIKE:
+            case MarkToken.Ids.STRIKE:
                 temp.setLength(0);
                 b = this.recursiveEmitLine(temp, in, pos + 2, mt);
                 if(b > 0)
@@ -618,7 +609,7 @@ public class Emitter
                     out.append(in.charAt(pos));
                 }
                 break;
-            case SUPER:
+            case MarkToken.Ids.SUPER:
                 temp.setLength(0);
                 b = this.recursiveEmitLine(temp, in, pos + 1, mt);
                 if(b > 0)
@@ -633,8 +624,8 @@ public class Emitter
                     out.append(in.charAt(pos));
                 }
                 break;
-            case CODE_SINGLE:
-            case CODE_DOUBLE:
+            case MarkToken.Ids.CODE_SINGLE:
+            case MarkToken.Ids.CODE_DOUBLE:
                 a = pos + (mt == MarkToken.CODE_DOUBLE ? 2 : 1);
                 b = this.findToken(in, a, mt);
                 if(b > 0)
@@ -656,7 +647,7 @@ public class Emitter
                     out.append(in.charAt(pos));
                 }
                 break;
-            case HTML:
+            case MarkToken.Ids.HTML:
                 temp.setLength(0);
                 b = this.checkHtml(temp, in, pos);
                 if(b > 0)
@@ -669,7 +660,7 @@ public class Emitter
                     out.append("&lt;");
                 }
                 break;
-            case ENTITY:
+            case MarkToken.Ids.ENTITY:
                 temp.setLength(0);
                 b = checkEntity(temp, in, pos);
                 if(b > 0)
@@ -682,7 +673,7 @@ public class Emitter
                     out.append("&amp;");
                 }
                 break;
-            case X_LINK_OPEN:
+            case MarkToken.Ids.X_LINK_OPEN:
                 temp.setLength(0);
                 b = this.recursiveEmitLine(temp, in, pos + 2, MarkToken.X_LINK_CLOSE);
                 if(b > 0 && this.config.specialLinkEmitter != null)
@@ -695,45 +686,45 @@ public class Emitter
                     out.append(in.charAt(pos));
                 }
                 break;
-            case X_COPY:
+            case MarkToken.Ids.X_COPY:
                 out.append("&copy;");
                 pos += 2;
                 break;
-            case X_REG:
+            case MarkToken.Ids.X_REG:
                 out.append("&reg;");
                 pos += 2;
                 break;
-            case X_TRADE:
+            case MarkToken.Ids.X_TRADE:
                 out.append("&trade;");
                 pos += 3;
                 break;
-            case X_NDASH:
+            case MarkToken.Ids.X_NDASH:
                 out.append("&ndash;");
                 pos++;
                 break;
-            case X_MDASH:
+            case MarkToken.Ids.X_MDASH:
                 out.append("&mdash;");
                 pos += 2;
                 break;
-            case X_HELLIP:
+            case MarkToken.Ids.X_HELLIP:
                 out.append("&hellip;");
                 pos += 2;
                 break;
-            case X_LAQUO:
+            case MarkToken.Ids.X_LAQUO:
                 out.append("&laquo;");
                 pos++;
                 break;
-            case X_RAQUO:
+            case MarkToken.Ids.X_RAQUO:
                 out.append("&raquo;");
                 pos++;
                 break;
-            case X_RDQUO:
+            case MarkToken.Ids.X_RDQUO:
                 out.append("&rdquo;");
                 break;
-            case X_LDQUO:
+            case MarkToken.Ids.X_LDQUO:
                 out.append("&ldquo;");
                 break;
-            case ESCAPE:
+            case MarkToken.Ids.ESCAPE:
                 pos++;
                 //$FALL-THROUGH$
             default:
@@ -766,7 +757,7 @@ public class Emitter
      *            Starting position.
      * @return The Token.
      */
-    private MarkToken getToken(final String in, final int pos)
+    private TokenType getToken(final String in, final int pos)
     {
         final char c0 = pos > 0 ? whitespaceToSpace(in.charAt(pos - 1)) : ' ';
         final char c = whitespaceToSpace(in.charAt(pos));
@@ -774,24 +765,32 @@ public class Emitter
         final char c2 = pos + 2 < in.length() ? whitespaceToSpace(in.charAt(pos + 2)) : ' ';
         final char c3 = pos + 3 < in.length() ? whitespaceToSpace(in.charAt(pos + 3)) : ' ';
 
+        // Modern token detection
+        for(Token token : config.flavour.getTokensOrdered()) {
+            if(token.isMatch(c, new char[] {c0}, new char[] {c1, c2, c3})) {
+                return token.getTokenType();
+            }
+        }
+
+        // Legacy token detection
         switch(c)
         {
-        case '*':
-            if(c1 == '*')
-            {
-                return c0 != ' ' || c2 != ' ' ? MarkToken.STRONG_STAR : MarkToken.EM_STAR;
-            }
-            return c0 != ' ' || c1 != ' ' ? MarkToken.EM_STAR : MarkToken.NONE;
-        case '_':
-            if(c1 == '_')
-            {
-                return c0 != ' ' || c2 != ' ' ? MarkToken.STRONG_UNDERSCORE : MarkToken.EM_UNDERSCORE;
-            }
-            if(this.useExtensions)
-            {
-                return Character.isLetterOrDigit(c0) && c0 != '_' && Character.isLetterOrDigit(c1) ? MarkToken.NONE : MarkToken.EM_UNDERSCORE;
-            }
-            return c0 != ' ' || c1 != ' ' ? MarkToken.EM_UNDERSCORE : MarkToken.NONE;
+//        case '*':
+//            if(c1 == '*')
+//            {
+//                return c0 != ' ' || c2 != ' ' ? MarkToken.STRONG_STAR : MarkToken.EM_STAR;
+//            }
+//            return c0 != ' ' || c1 != ' ' ? MarkToken.EM_STAR : MarkToken.NONE;
+//        case '_':
+//            if(c1 == '_')
+//            {
+//                return c0 != ' ' || c2 != ' ' ? MarkToken.STRONG_UNDERSCORE : MarkToken.EM_UNDERSCORE;
+//            }
+//            if(this.useExtensions)
+//            {
+//                return Character.isLetterOrDigit(c0) && c0 != '_' && Character.isLetterOrDigit(c1) ? MarkToken.NONE : MarkToken.EM_UNDERSCORE;
+//            }
+//            return c0 != ' ' || c1 != ' ' ? MarkToken.EM_UNDERSCORE : MarkToken.NONE;
         case '~':
             if(this.useExtensions && c1 == '~')
             {
