@@ -23,10 +23,9 @@ import java.util.regex.Pattern;
 
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.*;
-import net.dgardiner.markdown4j.core.enums.MarkToken;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.plugins.core.Plugin;
-import net.dgardiner.markdown4j.tokens.core.Token;
+import net.dgardiner.markdown4j.tokens.base.Token;
 
 
 /**
@@ -37,7 +36,7 @@ import net.dgardiner.markdown4j.tokens.core.Token;
 public class Emitter
 {
     /** Link references. */
-    private final HashMap<String, LinkRef> linkRefs = new HashMap<String, LinkRef>();
+    public final HashMap<String, LinkRef> linkRefs = new HashMap<String, LinkRef>();
     /** The configuration. */
     private final Configuration config;
     /** Extension flag. */
@@ -220,313 +219,22 @@ public class Emitter
      *            The String to search on.
      * @param start
      *            The starting character position.
-     * @param token
+     * @param tokenType
      *            The token to find.
      * @return The position of the token or -1 if none could be found.
      */
-    private int findToken(final String in, int start, TokenType token)
+    public int findToken(final String in, int start, TokenType tokenType)
     {
         int pos = start;
         while(pos < in.length()) {
-            if(this.getToken(in, pos) == token)
+            TokenType matched = this.getToken(in, pos);
+
+            if(matched.equals(tokenType))
                 return pos;
 
             pos++;
         }
         return -1;
-    }
-
-    /**
-     * Checks if there is a valid markdown link definition.
-     * 
-     * @param out
-     *            The StringBuilder containing the generated output.
-     * @param in
-     *            Input String.
-     * @param start
-     *            Starting position.
-     * @param token
-     *            Either LINK or IMAGE.
-     * @return The new position or -1 if there is no valid markdown link.
-     */
-    private int checkLink(final StringBuilder out, final String in, int start, TokenType token)
-    {
-        boolean isAbbrev = false;
-        int pos = start + (token.equals(MarkToken.LINK) ? 1 : 2);
-        final StringBuilder temp = new StringBuilder();
-
-        temp.setLength(0);
-        pos = Utils.readMdLinkId(temp, in, pos);
-        if(pos < start)
-            return -1;
-
-        String name = temp.toString(), link = null, comment = null;
-        final int oldPos = pos++;
-        pos = Utils.skipSpaces(in, pos);
-        if(pos < start)
-        {
-            final LinkRef lr = this.linkRefs.get(name.toLowerCase());
-            if(lr != null)
-            {
-                isAbbrev = lr.isAbbrev;
-                link = lr.link;
-                comment = lr.title;
-                pos = oldPos;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        else if(in.charAt(pos) == '(')
-        {
-            pos++;
-            pos = Utils.skipSpaces(in, pos);
-            if(pos < start)
-                return -1;
-            temp.setLength(0);
-            boolean useLt = in.charAt(pos) == '<';
-            pos = useLt ? Utils.readUntil(temp, in, pos + 1, '>') : Utils.readMdLink(temp, in, pos);
-            if(pos < start)
-                return -1;
-            if(useLt)
-                pos++;
-            link = temp.toString();
-
-            if(in.charAt(pos) == ' ')
-            {
-                pos = Utils.skipSpaces(in, pos);
-                if(pos > start && in.charAt(pos) == '"')
-                {
-                    pos++;
-                    temp.setLength(0);
-                    pos = Utils.readUntil(temp, in, pos, '"');
-                    if(pos < start)
-                        return -1;
-                    comment = temp.toString();
-                    pos++;
-                    pos = Utils.skipSpaces(in, pos);
-                    if(pos == -1)
-                        return -1;
-                }
-            }
-            if(in.charAt(pos) != ')')
-                return -1;
-        }
-        else if(in.charAt(pos) == '[')
-        {
-            pos++;
-            temp.setLength(0);
-            pos = Utils.readRawUntil(temp, in, pos, ']');
-            if(pos < start)
-                return -1;
-            final String id = temp.length() > 0 ? temp.toString() : name;
-            final LinkRef lr = this.linkRefs.get(id.toLowerCase());
-            if(lr != null)
-            {
-                link = lr.link;
-                comment = lr.title;
-            }
-        }
-        else
-        {
-            final LinkRef lr = this.linkRefs.get(name.toLowerCase());
-            if(lr != null)
-            {
-                isAbbrev = lr.isAbbrev;
-                link = lr.link;
-                comment = lr.title;
-                pos = oldPos;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-        if(link == null)
-            return -1;
-
-        if(token == MarkToken.LINK)
-        {
-            if(isAbbrev && comment != null)
-            {
-                if(!this.useExtensions)
-                    return -1;
-                out.append("<abbr title=\"");
-                Utils.appendValue(out, comment, 0, comment.length());
-                out.append("\">");
-                this.recursiveEmitLine(out, name, 0, MarkToken.NONE);
-                out.append("</abbr>");
-            }
-            else
-            {
-                this.config.decorator.openLink(out);
-                out.append(" href=\"");
-                Utils.appendValue(out, link, 0, link.length());
-                out.append('"');
-                if(comment != null)
-                {
-                    out.append(" title=\"");
-                    Utils.appendValue(out, comment, 0, comment.length());
-                    out.append('"');
-                }
-                out.append('>');
-                this.recursiveEmitLine(out, name, 0, MarkToken.NONE);
-                out.append("</a>");
-            }
-        }
-        else
-        {
-            this.config.decorator.openImage(out);
-            out.append(" src=\"");
-            Utils.appendValue(out, link, 0, link.length());
-            out.append("\" alt=\"");
-            Utils.appendValue(out, name, 0, name.length());
-            out.append('"');
-            if(comment != null)
-            {
-                out.append(" title=\"");
-                Utils.appendValue(out, comment, 0, comment.length());
-                out.append('"');
-            }
-            out.append(" />");
-        }
-
-        return pos;
-    }
-
-    /**
-     * Check if there is a valid Html tag here. This method also transforms auto
-     * links and mailto auto links.
-     * 
-     * @param out
-     *            The StringBuilder to write to.
-     * @param in
-     *            Input String.
-     * @param start
-     *            Starting position.
-     * @return The new position or -1 if nothing valid has been found.
-     */
-    private int checkHtml(final StringBuilder out, final String in, int start)
-    {
-        final StringBuilder temp = new StringBuilder();
-        int pos;
-
-        // Check for auto links
-        temp.setLength(0);
-        pos = Utils.readUntil(temp, in, start + 1, ':', ' ', '>', '\n');
-        if(pos != -1 && in.charAt(pos) == ':' && Html.isLinkPrefix(temp.toString()))
-        {
-            pos = Utils.readUntil(temp, in, pos, '>');
-            if(pos != -1)
-            {
-                final String link = temp.toString();
-                this.config.decorator.openLink(out);
-                out.append(" href=\"");
-                Utils.appendValue(out, link, 0, link.length());
-                out.append("\">");
-                Utils.appendValue(out, link, 0, link.length());
-                out.append("</a>");
-                return pos;
-            }
-        }
-
-        // Check for mailto or adress auto link
-        temp.setLength(0);
-        pos = Utils.readUntil(temp, in, start + 1, '@', ' ', '>', '\n');
-        if(pos != -1 && in.charAt(pos) == '@')
-        {
-            pos = Utils.readUntil(temp, in, pos, '>');
-            if(pos != -1)
-            {
-                final String link = temp.toString();
-                this.config.decorator.openLink(out);                
-                out.append(" href=\"");
-                
-                //address auto links
-                if(link.startsWith("@")) {
-                	String slink = link.substring(1);
-            		String url = "https://maps.google.com/maps?q="+slink.replace(' ', '+');
-            		out.append(url);
-                    out.append("\">");
-                    out.append(slink);
-                }
-                //mailto auto links
-                else {
-                    Utils.appendMailto(out, "mailto:", 0, 7);
-                    Utils.appendMailto(out, link, 0, link.length());
-                    out.append("\">");
-                    Utils.appendMailto(out, link, 0, link.length());                	
-                }
-                out.append("</a>");
-                return pos;
-            }
-        }
-
-        // Check for inline html
-        if(start + 2 < in.length())
-        {
-            temp.setLength(0);
-            return Utils.readXML(out, in, start, this.config.safeMode);
-        }
-
-        return -1;
-    }
-
-    /**
-     * Check if this is a valid XML/Html entity.
-     * 
-     * @param out
-     *            The StringBuilder to write to.
-     * @param in
-     *            Input String.
-     * @param start
-     *            Starting position
-     * @return The new position or -1 if this entity in invalid.
-     */
-    private static int checkEntity(final StringBuilder out, final String in, int start)
-    {
-        int pos = Utils.readUntil(out, in, start, ';');
-        if(pos < 0 || out.length() < 3)
-            return -1;
-        if(out.charAt(1) == '#')
-        {
-            if(out.charAt(2) == 'x' || out.charAt(2) == 'X')
-            {
-                if(out.length() < 4)
-                    return -1;
-                for(int i = 3; i < out.length(); i++)
-                {
-                    final char c = out.charAt(i);
-                    if((c < '0' || c > '9') && ((c < 'a' || c > 'f') && (c < 'A' || c > 'F')))
-                        return -1;
-                }
-            }
-            else
-            {
-                for(int i = 2; i < out.length(); i++)
-                {
-                    final char c = out.charAt(i);
-                    if(c < '0' || c > '9')
-                        return -1;
-                }
-            }
-            out.append(';');
-        }
-        else
-        {
-            for(int i = 1; i < out.length(); i++)
-            {
-                final char c = out.charAt(i);
-                if((c < 'a' || c > 'z') && (c < 'A' || c > 'Z'))
-                    return -1;
-            }
-            out.append(';');
-            return Html.isEntity(out.toString()) ? pos : -1;
-        }
-
-        return pos;
     }
 
     /**
@@ -553,184 +261,21 @@ public class Emitter
             // Detect token type
             final TokenType mt = this.getToken(in, pos);
 
-            // Retrieve modern token handler
-            Token token = null;
-
-            if(!mt.isLegacy()) {
-                token = config.flavour.getToken(mt.getId());
-
-                if (token == null) {
-                    // Unable to find token
-                    continue;
-                }
-            }
+            // Retrieve token handler
+            Token token = config.flavour.getToken(mt.getId());
 
             // Check if we should finish processing
-            if(!tokenType.equals(MarkToken.NONE) && (mt.equals(tokenType) || (token != null && token.isProcessed(tokenType, mt))))
+            if(!tokenType.equals(TokenType.NONE) && (mt.equals(tokenType) || (token != null && token.isProcessed(tokenType, mt))))
                 return pos;
 
-            // Process modern token
             if(token != null) {
-                pos = token.process(config, this, out, in, pos, mt);
-
-                pos++;
-                continue;
-            }
-
-            // Process legacy token
-            switch(mt.getId())
-            {
-            case MarkToken.Ids.IMAGE:
-            case MarkToken.Ids.LINK:
-                temp.setLength(0);
-                b = this.checkLink(temp, in, pos, mt);
-                if(b > 0)
-                {
-                    out.append(temp);
-                    pos = b;
-                }
-                else
-                {
-                    out.append(in.charAt(pos));
-                }
-                break;
-            case MarkToken.Ids.STRIKE:
-                temp.setLength(0);
-                b = this.recursiveEmitLine(temp, in, pos + 2, mt);
-                if(b > 0)
-                {
-                    this.config.decorator.openStrike(out);
-                    out.append(temp);
-                    this.config.decorator.closeStrike(out);
-                    pos = b + 1;
-                }
-                else
-                {
-                    out.append(in.charAt(pos));
-                }
-                break;
-            case MarkToken.Ids.SUPER:
-                temp.setLength(0);
-                b = this.recursiveEmitLine(temp, in, pos + 1, mt);
-                if(b > 0)
-                {
-                    this.config.decorator.openSuper(out);
-                    out.append(temp);
-                    this.config.decorator.closeSuper(out);
-                    pos = b;
-                }
-                else
-                {
-                    out.append(in.charAt(pos));
-                }
-                break;
-            case MarkToken.Ids.CODE_SINGLE:
-            case MarkToken.Ids.CODE_DOUBLE:
-                a = pos + (mt == MarkToken.CODE_DOUBLE ? 2 : 1);
-                b = this.findToken(in, a, mt);
-                if(b > 0)
-                {
-                    pos = b + (mt == MarkToken.CODE_DOUBLE ? 1 : 0);
-                    while(a < b && in.charAt(a) == ' ')
-                        a++;
-                    if(a < b)
-                    {
-                        while(in.charAt(b - 1) == ' ')
-                            b--;
-                        this.config.decorator.openCodeSpan(out);
-                        Utils.appendCode(out, in, a, b);
-                        this.config.decorator.closeCodeSpan(out);
-                    }
-                }
-                else
-                {
-                    out.append(in.charAt(pos));
-                }
-                break;
-            case MarkToken.Ids.HTML:
-                temp.setLength(0);
-                b = this.checkHtml(temp, in, pos);
-                if(b > 0)
-                {
-                    out.append(temp);
-                    pos = b;
-                }
-                else
-                {
-                    out.append("&lt;");
-                }
-                break;
-            case MarkToken.Ids.ENTITY:
-                temp.setLength(0);
-                b = checkEntity(temp, in, pos);
-                if(b > 0)
-                {
-                    out.append(temp);
-                    pos = b;
-                }
-                else
-                {
-                    out.append("&amp;");
-                }
-                break;
-            case MarkToken.Ids.X_LINK_OPEN:
-                temp.setLength(0);
-                b = this.recursiveEmitLine(temp, in, pos + 2, MarkToken.X_LINK_CLOSE);
-                if(b > 0 && this.config.specialLinkEmitter != null)
-                {
-                    this.config.specialLinkEmitter.emitSpan(out, temp.toString());
-                    pos = b + 1;
-                }
-                else
-                {
-                    out.append(in.charAt(pos));
-                }
-                break;
-            case MarkToken.Ids.X_COPY:
-                out.append("&copy;");
-                pos += 2;
-                break;
-            case MarkToken.Ids.X_REG:
-                out.append("&reg;");
-                pos += 2;
-                break;
-            case MarkToken.Ids.X_TRADE:
-                out.append("&trade;");
-                pos += 3;
-                break;
-            case MarkToken.Ids.X_NDASH:
-                out.append("&ndash;");
-                pos++;
-                break;
-            case MarkToken.Ids.X_MDASH:
-                out.append("&mdash;");
-                pos += 2;
-                break;
-            case MarkToken.Ids.X_HELLIP:
-                out.append("&hellip;");
-                pos += 2;
-                break;
-            case MarkToken.Ids.X_LAQUO:
-                out.append("&laquo;");
-                pos++;
-                break;
-            case MarkToken.Ids.X_RAQUO:
-                out.append("&raquo;");
-                pos++;
-                break;
-            case MarkToken.Ids.X_RDQUO:
-                out.append("&rdquo;");
-                break;
-            case MarkToken.Ids.X_LDQUO:
-                out.append("&ldquo;");
-                break;
-            case MarkToken.Ids.ESCAPE:
-                pos++;
-                //$FALL-THROUGH$
-            default:
+                // Process token
+                pos = token.process(config, this, temp, out, in, pos, mt);
+            } else {
+                // Basic text
                 out.append(in.charAt(pos));
-                break;
             }
+
             pos++;
         }
         return -1;
@@ -759,128 +304,29 @@ public class Emitter
      */
     private TokenType getToken(final String in, final int pos)
     {
-        final char c0 = pos > 0 ? whitespaceToSpace(in.charAt(pos - 1)) : ' ';
-        final char c = whitespaceToSpace(in.charAt(pos));
-        final char c1 = pos + 1 < in.length() ? whitespaceToSpace(in.charAt(pos + 1)) : ' ';
-        final char c2 = pos + 2 < in.length() ? whitespaceToSpace(in.charAt(pos + 2)) : ' ';
-        final char c3 = pos + 3 < in.length() ? whitespaceToSpace(in.charAt(pos + 3)) : ' ';
+        final char value = whitespaceToSpace(in.charAt(pos));
 
-        // Modern token detection
+        final char[] leading = new char[] {
+            pos > 0 ? whitespaceToSpace(in.charAt(pos - 1)) : ' '
+        };
+
+        final char[] trailing = new char[] {
+            pos + 1 < in.length() ? whitespaceToSpace(in.charAt(pos + 1)) : ' ',
+            pos + 2 < in.length() ? whitespaceToSpace(in.charAt(pos + 2)) : ' ',
+            pos + 3 < in.length() ? whitespaceToSpace(in.charAt(pos + 3)) : ' '
+        };
+
+        // Try detect token at current cursor position
         for(Token token : config.flavour.getTokensOrdered()) {
-            if(token.isMatch(c, new char[] {c0}, new char[] {c1, c2, c3})) {
-                return token.getTokenType();
+            int state = token.match(value, leading, trailing);
+
+            if(state != 0) {
+                return token.getTokenType(state);
             }
         }
 
-        // Legacy token detection
-        switch(c)
-        {
-//        case '*':
-//            if(c1 == '*')
-//            {
-//                return c0 != ' ' || c2 != ' ' ? MarkToken.STRONG_STAR : MarkToken.EM_STAR;
-//            }
-//            return c0 != ' ' || c1 != ' ' ? MarkToken.EM_STAR : MarkToken.NONE;
-//        case '_':
-//            if(c1 == '_')
-//            {
-//                return c0 != ' ' || c2 != ' ' ? MarkToken.STRONG_UNDERSCORE : MarkToken.EM_UNDERSCORE;
-//            }
-//            if(this.useExtensions)
-//            {
-//                return Character.isLetterOrDigit(c0) && c0 != '_' && Character.isLetterOrDigit(c1) ? MarkToken.NONE : MarkToken.EM_UNDERSCORE;
-//            }
-//            return c0 != ' ' || c1 != ' ' ? MarkToken.EM_UNDERSCORE : MarkToken.NONE;
-        case '~':
-            if(this.useExtensions && c1 == '~')
-            {
-                return MarkToken.STRIKE;
-            }
-            return MarkToken.NONE;
-        case '!':
-            if(c1 == '[')
-                return MarkToken.IMAGE;
-            return MarkToken.NONE;
-        case '[':
-            if(this.useExtensions && c1 == '[')
-                return MarkToken.X_LINK_OPEN;
-            return MarkToken.LINK;
-        case ']':
-            if(this.useExtensions && c1 == ']')
-                return MarkToken.X_LINK_CLOSE;
-            return MarkToken.NONE;
-        case '`':
-            return c1 == '`' ? MarkToken.CODE_DOUBLE : MarkToken.CODE_SINGLE;
-        case '\\':
-            switch(c1)
-            {
-            case '\\':
-            case '[':
-            case ']':
-            case '(':
-            case ')':
-            case '{':
-            case '}':
-            case '#':
-            case '"':
-            case '\'':
-            case '.':
-            case '>':
-            case '<':
-            case '*':
-            case '+':
-            case '-':
-            case '_':
-            case '!':
-            case '`':
-            case '^':
-                return MarkToken.ESCAPE;
-            default:
-                return MarkToken.NONE;
-            }
-        case '<':
-            if(this.useExtensions && c1 == '<')
-                return MarkToken.X_LAQUO;
-            return MarkToken.HTML;
-        case '&':
-            return MarkToken.ENTITY;
-        default:
-            if(this.useExtensions)
-            {
-                switch(c)
-                {
-                case '-':
-                    if(c1 == '-')
-                        return c2 == '-' ? MarkToken.X_MDASH : MarkToken.X_NDASH;
-                    break;
-                case '^':
-                    return c0 == '^' || c1 == '^' ? MarkToken.NONE : MarkToken.SUPER;
-                case '>':
-                    if(c1 == '>')
-                        return MarkToken.X_RAQUO;
-                    break;
-                case '.':
-                    if(c1 == '.' && c2 == '.')
-                        return MarkToken.X_HELLIP;
-                    break;
-                case '(':
-                    if(c1 == 'C' && c2 == ')')
-                        return MarkToken.X_COPY;
-                    if(c1 == 'R' && c2 == ')')
-                        return MarkToken.X_REG;
-                    if(c1 == 'T' & c2 == 'M' & c3 == ')')
-                        return MarkToken.X_TRADE;
-                    break;
-                case '"':
-                    if(!Character.isLetterOrDigit(c0) && c1 != ' ')
-                        return MarkToken.X_LDQUO;
-                    if(c0 != ' ' && !Character.isLetterOrDigit(c1))
-                        return MarkToken.X_RDQUO;
-                    break;
-                }
-            }
-            return MarkToken.NONE;
-        }
+        // No token detected
+        return TokenType.NONE;
     }
 
     /**
@@ -912,7 +358,7 @@ public class Emitter
             line = line.next;
         }
 
-        this.recursiveEmitLine(out, in.toString(), 0, MarkToken.NONE);
+        this.recursiveEmitLine(out, in.toString(), 0, TokenType.NONE);
     }
 
     /**

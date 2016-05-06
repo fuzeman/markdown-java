@@ -4,7 +4,7 @@ import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.TokenType;
 import net.dgardiner.markdown4j.emitters.core.Emitter;
 import net.dgardiner.markdown4j.flavours.github.GithubDecorator;
-import net.dgardiner.markdown4j.tokens.core.Token;
+import net.dgardiner.markdown4j.tokens.base.Token;
 
 public class GithubUsernameToken extends Token {
     public GithubUsernameToken() {
@@ -12,16 +12,20 @@ public class GithubUsernameToken extends Token {
     }
 
     @Override
-    public boolean isMatch(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing) {
         if (value != '@') {
-            return false;
+            return 0;
         }
 
-        return leading[0] == ' ' && trailing[0] != ' ';
+        if(leading[0] == ' ' && trailing[0] != ' ') {
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
-    public int process(Configuration config, Emitter emitter, StringBuilder out, String in, int pos, TokenType tokenType) {
+    public int process(Configuration config, Emitter emitter, final StringBuilder temp, final StringBuilder out, String in, int pos, TokenType tokenType) {
         temp.setLength(0);
 
         int b = in.indexOf(' ', pos);

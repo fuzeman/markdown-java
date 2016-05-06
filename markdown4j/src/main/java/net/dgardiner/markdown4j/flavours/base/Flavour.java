@@ -1,6 +1,6 @@
 package net.dgardiner.markdown4j.flavours.base;
 
-import net.dgardiner.markdown4j.tokens.core.Token;
+import net.dgardiner.markdown4j.tokens.base.Token;
 
 import java.util.*;
 import java.util.logging.Logger;

@@ -5,39 +5,36 @@ import net.dgardiner.markdown4j.core.TokenType;
 import net.dgardiner.markdown4j.emitters.core.Emitter;
 import net.dgardiner.markdown4j.tokens.base.Token;
 
-public class BoldToken extends Token {
-    public BoldToken() { super("bold"); }
+public class QuoteToken extends Token {
+    private static final int QUOTE_OPEN  = 1;
+    private static final int QUOTE_CLOSE = 2;
+
+    public QuoteToken() { super("quote"); }
 
     @Override
     public int match(char value, char[] leading, char[] trailing) {
-        if (value != '*' && value != '_') {
-            return 0;
-        }
-
-        // Ensure there is at least two characters
-        if(trailing[0] == value && (leading[0] != ' ' || trailing[1] != ' ')) {
-            return 1;
+        if(value == '"') {
+            if(leading[0] == ' ' && trailing[0] != ' ' && trailing[0] != '"') {
+                return QUOTE_OPEN;
+            } else if(leading[0] != ' ' && leading[0] != '"' && trailing[0] == ' ') {
+                return QUOTE_CLOSE;
+            }
         }
 
         return 0;
     }
 
     @Override
-    public boolean isProcessed(TokenType current, TokenType matched) {
-        return current.getId().equals("default:italic") && matched.equals(getTokenType());
-    }
-
-    @Override
     public int process(Configuration config, Emitter emitter, final StringBuilder temp, final StringBuilder out, String in, int pos, TokenType tokenType) {
         temp.setLength(0);
 
-        int b = emitter.recursiveEmitLine(temp, in, pos + 2, tokenType);
+        int b = emitter.recursiveEmitLine(temp, in, pos + 1, getTokenType(QUOTE_CLOSE));
 
         if(b > 0) {
-            config.decorator.openStrong(out);
+            out.append("&ldquo;");
             out.append(temp);
-            config.decorator.closeStrong(out);
-            pos = b + 1;
+            out.append("&rdquo;");
+            pos = b;
         } else {
             out.append(in.charAt(pos));
         }
