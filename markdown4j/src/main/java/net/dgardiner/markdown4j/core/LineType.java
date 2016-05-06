@@ -27,10 +27,6 @@ public class LineType {
         this.key = key;
     }
 
-    public boolean isLegacy() {
-        return group.equals("legacy");
-    }
-
     public String getGroup() {
         return group;
     }
