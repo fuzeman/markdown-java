@@ -45,8 +45,8 @@ can <a href="/projects/markdown/syntax.text">see the source for it by adding '.t
 document should be publishable as-is, as plain text, without looking
 like it's been marked up with tags or formatting instructions. While
 Markdown's syntax has been influenced by several existing text-to-HTML
-filters -- including <a href="http://docutils.sourceforge.net/mirror/setext.html">Setext</a>, <a href="http://www.aaronsw.com/2002/atx/">atx</a>, <a href="http://textism.com/tools/textile/">Textile</a>, <a href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>,
-<a href="http://www.triptico.com/software/grutatxt.html">Grutatext</a>, and <a href="http://ettext.taint.org/doc/">EtText</a> -- the single biggest source of
+filters &ndash; including <a href="http://docutils.sourceforge.net/mirror/setext.html">Setext</a>, <a href="http://www.aaronsw.com/2002/atx/">atx</a>, <a href="http://textism.com/tools/textile/">Textile</a>, <a href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>,
+<a href="http://www.triptico.com/software/grutatxt.html">Grutatext</a>, and <a href="http://ettext.taint.org/doc/">EtText</a> &ndash; the single biggest source of
 inspiration for Markdown's syntax is the format of plain text email.</p>
 <p>To this end, Markdown's syntax is comprised entirely of punctuation
 characters, which punctuation characters have been carefully chosen so
@@ -69,8 +69,8 @@ can be conveyed in plain text.</p>
 use HTML itself. There's no need to preface it or delimit it to
 indicate that you're switching from Markdown to HTML; you just use
 the tags.</p>
-<p>The only restrictions are that block-level HTML elements -- e.g. <code>&lt;div&gt;</code>,
-<code>&lt;table&gt;</code>, <code>&lt;pre&gt;</code>, <code>&lt;p&gt;</code>, etc. -- must be separated from surrounding
+<p>The only restrictions are that block-level HTML elements &ndash; e.g. <code>&lt;div&gt;</code>,
+<code>&lt;table&gt;</code>, <code>&lt;pre&gt;</code>, <code>&lt;p&gt;</code>, etc. &ndash; must be separated from surrounding
 content by blank lines, and the start and end tags of the block should
 not be indented with tabs or spaces. Markdown is smart enough not
 to add extra (unwanted) <code>&lt;p&gt;</code> tags around HTML block-level tags.</p>
@@ -88,7 +88,7 @@ This is another regular paragraph.
 <p>Note that Markdown formatting syntax is not processed within block-level
 HTML tags. E.g., you can't use Markdown-style <code>*emphasis*</code> inside an
 HTML block.</p>
-<p>Span-level HTML tags -- e.g. <code>&lt;span&gt;</code>, <code>&lt;cite&gt;</code>, or <code>&lt;del&gt;</code> -- can be
+<p>Span-level HTML tags &ndash; e.g. <code>&lt;span&gt;</code>, <code>&lt;cite&gt;</code>, or <code>&lt;del&gt;</code> &ndash; can be
 used anywhere in a Markdown paragraph, list item, or header. If you
 want, you can even use HTML tags instead of Markdown formatting; e.g. if
 you'd prefer to use HTML <code>&lt;a&gt;</code> or <code>&lt;img&gt;</code> tags instead of Markdown's
@@ -143,22 +143,22 @@ and <code>&amp;</code> in your example code needs to be escaped.)</p>
 <h3 id="p">Paragraphs and Line Breaks</h3>
 <p>A paragraph is simply one or more consecutive lines of text, separated
 by one or more blank lines. (A blank line is any line that looks like a
-blank line -- a line containing nothing but spaces or tabs is considered
+blank line &ndash; a line containing nothing but spaces or tabs is considered
 blank.) Normal paragraphs should not be intended with spaces or tabs.</p>
-<p>The implication of the "one or more consecutive lines of text" rule is
-that Markdown supports "hard-wrapped" text paragraphs. This differs
+<p>The implication of the &ldquo;one or more consecutive lines of text&rdquo; rule is
+that Markdown supports &ldquo;hard-wrapped&rdquo; text paragraphs. This differs
 significantly from most other text-to-HTML formatters (including Movable
-Type's "Convert Line Breaks" option) which translate every line break
+Type's &ldquo;Convert Line Breaks&rdquo; option) which translate every line break
 character in a paragraph into a <code>&lt;br /&gt;</code> tag.</p>
 <p>When you <em>do</em> want to insert a <code>&lt;br /&gt;</code> break tag using Markdown, you
 end a line with two or more spaces, then type return.</p>
 <p>Yes, this takes a tad more effort to create a <code>&lt;br /&gt;</code>, but a simplistic
-"every line break is a <code>&lt;br /&gt;</code>" rule wouldn't work for Markdown.
+&ldquo;every line break is a <code>&lt;br /&gt;</code>&rdquo; rule wouldn't work for Markdown.
 Markdown's email-style <a href="#blockquote">blockquoting</a> and multi-paragraph <a href="#list">list items</a>
-work best -- and look better -- when you format them with hard breaks.</p>
+work best &ndash; and look better &ndash; when you format them with hard breaks.</p>
 <h3 id="header">Headers</h3>
 <p>Markdown supports two styles of headers, <a href="http://docutils.sourceforge.net/mirror/setext.html">Setext</a> and <a href="http://www.aaronsw.com/2002/atx/">atx</a>.</p>
-<p>Setext-style headers are "underlined" using equal signs (for first-level
+<p>Setext-style headers are &ldquo;underlined&rdquo; using equal signs (for first-level
 headers) and dashes (for second-level headers). For example:</p>
 <pre><code>This is an H1
 =============
@@ -175,8 +175,8 @@ corresponding to header levels 1-6. For example:</p>
 
 ###### This is an H6
 </code></pre>
-<p>Optionally, you may "close" atx-style headers. This is purely
-cosmetic -- you can use this if you think it looks better. The
+<p>Optionally, you may &ldquo;close&rdquo; atx-style headers. This is purely
+cosmetic &ndash; you can use this if you think it looks better. The
 closing hashes don't even need to match the number of hashes
 used to open the header. (The number of opening hashes
 determines the header level.) :</p>
@@ -231,8 +231,8 @@ example, with BBEdit, you can make a selection and choose Increase
 Quote Level from the Text menu.</p>
 <h3 id="list">Lists</h3>
 <p>Markdown supports ordered (numbered) and unordered (bulleted) lists.</p>
-<p>Unordered lists use asterisks, pluses, and hyphens -- interchangably
--- as list markers:</p>
+<p>Unordered lists use asterisks, pluses, and hyphens &ndash; interchangably
+&ndash; as list markers:</p>
 <pre><code>*   Red
 *   Green
 *   Blue
@@ -349,7 +349,7 @@ delimiters need to be indented:</p>
     &gt; inside a list item.
 </code></pre>
 <p>To put a code block within a list item, the code block needs
-to be indented <em>twice</em> -- 8 spaces or two tabs:</p>
+to be indented <em>twice</em> &ndash; 8 spaces or two tabs:</p>
 <pre><code>*   A list item with a code block:
 
         &lt;code goes here&gt;
@@ -379,7 +379,7 @@ block by at least 4 spaces or 1 tab. For example, given this input:</p>
 &lt;pre&gt;&lt;code&gt;This is a code block.
 &lt;/code&gt;&lt;/pre&gt;
 </code></pre>
-<p>One level of indentation -- 4 spaces or 1 tab -- is removed from each
+<p>One level of indentation &ndash; 4 spaces or 1 tab &ndash; is removed from each
 line of the code block. For example, this:</p>
 <pre><code>Here is an example of AppleScript:
 
@@ -399,7 +399,7 @@ end tell
 (or the end of the article).</p>
 <p>Within a code block, ampersands (<code>&amp;</code>) and angle brackets (<code>&lt;</code> and <code>&gt;</code>)
 are automatically converted into HTML entities. This makes it very
-easy to include example HTML source code using Markdown -- just paste
+easy to include example HTML source code using Markdown &ndash; just paste
 it and indent it, and Markdown will handle the hassle of encoding the
 ampersands and angle brackets. For example, this:</p>
 <pre><code>    &lt;div class="footer"&gt;
@@ -487,15 +487,15 @@ or tabs for padding, which tends to look better with longer URLs:</p>
 </code></pre>
 <p>Link definitions are only used for creating links during Markdown
 processing, and are stripped from your document in the HTML output.</p>
-<p>Link definition names may constist of letters, numbers, spaces, and punctuation -- but they are <em>not</em> case sensitive. E.g. these two links:</p>
+<p>Link definition names may constist of letters, numbers, spaces, and punctuation &ndash; but they are <em>not</em> case sensitive. E.g. these two links:</p>
 <pre><code>[link text][a]
 [link text][A]
 </code></pre>
 <p>are equivalent.</p>
 <p>The <em>implicit link name</em> shortcut allows you to omit the name of the
 link, in which case the link text itself is used as the name.
-Just use an empty set of square brackets -- e.g., to link the word
-"Google" to the google.com web site, you could simply write:</p>
+Just use an empty set of square brackets &ndash; e.g., to link the word
+&ldquo;Google&rdquo; to the google.com web site, you could simply write:</p>
 <pre><code>[Google][]
 </code></pre>
 <p>And then define the link:</p>
@@ -602,7 +602,7 @@ multiple backticks as the opening and closing delimiters:</p>
 <p>which will produce this:</p>
 <pre><code>&lt;p&gt;&lt;code&gt;There is a literal backtick (`) here.&lt;/code&gt;&lt;/p&gt;
 </code></pre>
-<p>The backtick delimiters surrounding a code span may include spaces --
+<p>The backtick delimiters surrounding a code span may include spaces &ndash;
 one after the opening, one before the closing. This allows you to place
 literal backtick characters at the beginning or end of a code span:</p>
 <pre><code>A single backtick in a code span: `` ` ``
@@ -630,7 +630,7 @@ tags. Markdown will turn this:</p>
 equivalent of &lt;code&gt;&amp;amp;mdash;&lt;/code&gt;.&lt;/p&gt;
 </code></pre>
 <h3 id="img">Images</h3>
-<p>Admittedly, it's fairly difficult to devise a "natural" syntax for
+<p>Admittedly, it's fairly difficult to devise a &ldquo;natural&rdquo; syntax for
 placing images into a plain text document format.</p>
 <p>Markdown uses an image syntax that is intended to resemble the syntax
 for links, allowing for two styles: <em>inline</em> and <em>reference</em>.</p>
@@ -651,7 +651,7 @@ or single quotes.</li>
 <p>Reference-style image syntax looks like this:</p>
 <pre><code>![Alt text][id]
 </code></pre>
-<p>Where "id" is the name of a defined image reference. Image references
+<p>Where &ldquo;id&rdquo; is the name of a defined image reference. Image references
 are defined using syntax identical to link references:</p>
 <pre><code>[id]: url/to/image  "Optional title attribute"
 </code></pre>
@@ -661,7 +661,7 @@ use regular HTML <code>&lt;img&gt;</code> tags.</p>
 <hr />
 <h2 id="misc">Miscellaneous</h2>
 <h3 id="autolink">Automatic Links</h3>
-<p>Markdown supports a shortcut style for creating "automatic" links for URLs and email addresses: simply surround the URL or email address with angle brackets. What this means is that if you want to show the actual text of a URL or email address, and also have it be a clickable link, you can do this:</p>
+<p>Markdown supports a shortcut style for creating &ldquo;automatic&rdquo; links for URLs and email addresses: simply surround the URL or email address with angle brackets. What this means is that if you want to show the actual text of a URL or email address, and also have it be a clickable link, you can do this:</p>
 <pre><code>&lt;http://example.com/&gt;
 </code></pre>
 <p>Markdown will turn this into:</p>

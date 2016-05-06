@@ -2,7 +2,7 @@
 Span-level HTML tags -- e.g. `<span>`, `<cite>`, or `<del>`
 
 # Result 1
-<p>Span-level HTML tags -- e.g. <code>&lt;span&gt;</code>, <code>&lt;cite&gt;</code>, or <code>&lt;del&gt;</code></p>
+<p>Span-level HTML tags &ndash; e.g. <code>&lt;span&gt;</code>, <code>&lt;cite&gt;</code>, or <code>&lt;del&gt;</code></p>
 
 # Test 2 (newlines after H4 tags)
 #### Headers in blockquotes
@@ -92,8 +92,8 @@ inspiration for Markdown's syntax is the format of plain text email.
 document should be publishable as-is, as plain text, without looking
 like it's been marked up with tags or formatting instructions. While
 Markdown's syntax has been influenced by several existing text-to-HTML
-filters -- including <a href="http://docutils.sourceforge.net/mirror/setext.html">Setext</a>, <a href="http://www.aaronsw.com/2002/atx/">atx</a>, <a href="http://textism.com/tools/textile/">Textile</a>, <a href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>,
-<a href="http://www.triptico.com/software/grutatxt.html">Grutatext</a>, and <a href="http://ettext.taint.org/doc/">EtText</a> -- the single biggest source of
+filters &ndash; including <a href="http://docutils.sourceforge.net/mirror/setext.html">Setext</a>, <a href="http://www.aaronsw.com/2002/atx/">atx</a>, <a href="http://textism.com/tools/textile/">Textile</a>, <a href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>,
+<a href="http://www.triptico.com/software/grutatxt.html">Grutatext</a>, and <a href="http://ettext.taint.org/doc/">EtText</a> &ndash; the single biggest source of
 inspiration for Markdown's syntax is the format of plain text email.</p>
 
 # Test 8 (Backslash escapes)
@@ -116,7 +116,7 @@ used email.</p>
 Don't replace `$4`...
 
 # Result 9
-<p>Don't replace <code>$4</code>...</p>
+<p>Don't replace <code>$4</code>&hellip;</p>
 
 # Test 10 (block code with backrefs)
 This is a normal paragraph.
@@ -221,8 +221,8 @@ not be indented with tabs or spaces. Markdown is smart enough not
 to add extra (unwanted) `<p>` tags around HTML block-level tags.
 
 # Result 13
-<p>The only restrictions are that block-level HTML elements -- e.g. <code>&lt;div&gt;</code>,
-<code>&lt;table&gt;</code>, <code>&lt;pre&gt;</code>, <code>&lt;p&gt;</code>, etc. -- must be separated from surrounding
+<p>The only restrictions are that block-level HTML elements &ndash; e.g. <code>&lt;div&gt;</code>,
+<code>&lt;table&gt;</code>, <code>&lt;pre&gt;</code>, <code>&lt;p&gt;</code>, etc. &ndash; must be separated from surrounding
 content by blank lines, and the start and end tags of the block should
 not be indented with tabs or spaces. Markdown is smart enough not
 to add extra (unwanted) <code>&lt;p&gt;</code> tags around HTML block-level tags.</p>

@@ -35,7 +35,6 @@ software, even if advised of the possibility of such damage.
 
 package net.dgardiner.markdown4j;
 
-import net.dgardiner.markdown4j.core.matchers.IsEqualIgnoringWhiteSpace;
 import net.dgardiner.markdown4j.core.parser.Processor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
