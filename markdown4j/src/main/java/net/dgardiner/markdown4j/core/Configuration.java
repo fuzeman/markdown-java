@@ -15,14 +15,11 @@
  */
 package net.dgardiner.markdown4j.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import net.dgardiner.markdown4j.flavours.base.Flavour;
-import net.dgardiner.markdown4j.flavours.basic.BasicDecorator;
-import net.dgardiner.markdown4j.flavours.base.Decorator;
-import net.dgardiner.markdown4j.emitters.core.BlockEmitter;
-import net.dgardiner.markdown4j.emitters.core.SpanEmitter;
+import net.dgardiner.markdown4j.core.base.Flavour;
+import net.dgardiner.markdown4j.core.base.SpanEmitter;
 import net.dgardiner.markdown4j.flavours.basic.BasicFlavour;
 import net.dgardiner.markdown4j.plugins.core.Plugin;
 
@@ -37,14 +34,12 @@ public class Configuration
     public final boolean safeMode;
     public final String encoding;
 
-    public final Decorator decorator;
     public final Flavour flavour;
 
-    public final BlockEmitter codeBlockEmitter;
     public final boolean forceExtendedProfile;
     public final boolean convertNewline2Br;
     public final SpanEmitter specialLinkEmitter;
-    public final List<Plugin> plugins;
+    public final Map<String, Plugin> plugins;
 
     /**
      * <p>
@@ -55,7 +50,7 @@ public class Configuration
      * <ul>
      * <li><code>safeMode = false</code></li>
      * <li><code>encoding = UTF-8</code></li>
-     * <li><code>decorator = BasicDecorator</code></li>
+     * <li><code>legacyDecorator = BasicDecorator</code></li>
      * <li><code>codeBlockEmitter = null</code></li>
      * </ul>
      */
@@ -69,7 +64,7 @@ public class Configuration
      * <ul>
      * <li><code>safeMode = true</code></li>
      * <li><code>encoding = UTF-8</code></li>
-     * <li><code>decorator = BasicDecorator</code></li>
+     * <li><code>legacyDecorator = BasicDecorator</code></li>
      * <li><code>codeBlockEmitter = null</code></li>
      * </ul>
      */
@@ -80,16 +75,13 @@ public class Configuration
      * 
      * @param safeMode
      * @param encoding
-     * @param decorator
      */
-    Configuration(boolean safeMode, String encoding, Decorator decorator, Flavour flavour, BlockEmitter codeBlockEmitter,
-            boolean forceExtendedProfile, boolean convertNewline2Br, SpanEmitter specialLinkEmitter, List<Plugin> plugins)
+    Configuration(boolean safeMode, String encoding, Flavour flavour, boolean forceExtendedProfile,
+                  boolean convertNewline2Br, SpanEmitter specialLinkEmitter, Map<String, Plugin> plugins)
     {
         this.safeMode = safeMode;
         this.encoding = encoding;
-        this.decorator = decorator;
         this.flavour = flavour;
-        this.codeBlockEmitter = codeBlockEmitter;
         this.convertNewline2Br = convertNewline2Br;
         this.forceExtendedProfile = forceExtendedProfile;
         this.specialLinkEmitter = specialLinkEmitter;
@@ -118,11 +110,9 @@ public class Configuration
         private boolean forceExtendedProfile = false;
         private boolean convertNewline2Br = false;
         private String encoding = "UTF-8";
-        private Decorator decorator = new BasicDecorator();
         private Flavour flavour = new BasicFlavour();
-        private BlockEmitter codeBlockEmitter = null;
         private SpanEmitter specialLinkEmitter = null;
-        private List<Plugin> plugins = new ArrayList<Plugin>();
+        private Map<String, Plugin> plugins = new HashMap<String, Plugin>();
 
         /**
          * Constructor.
@@ -203,23 +193,6 @@ public class Configuration
         }
 
         /**
-         * Sets the decorator for txtmark.
-         * 
-         * Default: <code>BasicDecorator()</code>
-         * 
-         * @param decorator
-         *            The decorator
-         * @return This builder
-         * @see BasicDecorator
-         * @since 0.7
-         */
-        public Builder setDecorator(Decorator decorator)
-        {
-            this.decorator = decorator;
-            return this;
-        }
-
-        /**
          * Sets the markdown flavour for the processor.
          *
          * Default: <code>BasicDecorator()</code>
@@ -227,29 +200,11 @@ public class Configuration
          * @param flavour
          *            The flavour
          * @return This builder
-         * @see BasicDecorator
          * @since 0.7
          */
         public Builder setFlavour(Flavour flavour)
         {
             this.flavour = flavour;
-            return this;
-        }
-
-        /**
-         * Sets the code block emitter.
-         * 
-         * Default: <code>null</code>
-         * 
-         * @param emitter
-         *            The BlockEmitter
-         * @return This builder
-         * @see BlockEmitter
-         * @since 0.7
-         */
-        public Builder setCodeBlockEmitter(BlockEmitter emitter)
-        {
-            this.codeBlockEmitter = emitter;
             return this;
         }
 
@@ -277,7 +232,7 @@ public class Configuration
         public Builder registerPlugins(Plugin... plugins)
         {
         	for(Plugin plugin : plugins) {
-                this.plugins.add(plugin);        		
+                this.plugins.put(plugin.getIdPlugin(), plugin);
         	}
             return this;
         }
@@ -291,12 +246,15 @@ public class Configuration
          */
         public Configuration build()
         {
-            return new Configuration(this.safeMode, this.encoding, this.decorator, this.flavour, this.codeBlockEmitter,
-                    this.forceExtendedProfile, this.convertNewline2Br, this.specialLinkEmitter, this.plugins);
+            return new Configuration(
+                this.safeMode,
+                this.encoding,
+                this.flavour,
+                this.forceExtendedProfile,
+                this.convertNewline2Br,
+                this.specialLinkEmitter,
+                this.plugins
+            );
         }
-
-		public Decorator getDecorator() {
-			return decorator;
-		}
     }
 }

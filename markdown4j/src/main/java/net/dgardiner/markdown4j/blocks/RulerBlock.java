@@ -1,12 +1,12 @@
 package net.dgardiner.markdown4j.blocks;
 
+import net.dgardiner.markdown4j.core.types.BlockType;
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.LineType;
-import net.dgardiner.markdown4j.core.enums.BlockType;
+import net.dgardiner.markdown4j.core.types.LineType;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
-import net.dgardiner.markdown4j.flavours.base.Block;
+import net.dgardiner.markdown4j.blocks.core.Block;
 
 public class RulerBlock extends Block {
     public static final String ID = "ruler";
@@ -41,7 +41,7 @@ public class RulerBlock extends Block {
             root.split(line.previous);
         }
 
-        root.split(line).type = BlockType.RULER;
+        root.split(line).type = new BlockType("ruler");
         root.removeLeadingEmptyLines();
         return root.lines;
     }

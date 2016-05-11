@@ -1,6 +1,5 @@
 package net.dgardiner.markdown4j;
 
-import net.dgardiner.markdown4j.flavours.github.GithubDecorator;
 import net.dgardiner.markdown4j.flavours.github.GithubFlavour;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +56,6 @@ public class GithubParserTest {
         this.name = name;
 
         this.processor = new Markdown4jProcessor();
-        this.processor.setDecorator(new GithubDecorator());
         this.processor.setFlavour(new GithubFlavour());
     }
 

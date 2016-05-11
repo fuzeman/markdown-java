@@ -16,11 +16,10 @@
 package net.dgardiner.markdown4j.core.parser;
 
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.LineType;
+import net.dgardiner.markdown4j.core.types.LineType;
 import net.dgardiner.markdown4j.core.LinkRef;
-import net.dgardiner.markdown4j.flavours.base.Block;
-import net.dgardiner.markdown4j.flavours.base.Decorator;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.core.Emitter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -186,38 +185,6 @@ public class Processor
     }
 
     /**
-     * Transforms an input String into Html.
-     * 
-     * @param input
-     *            The String to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final String input, final Decorator decorator)
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input String into Html.
-     * 
-     * @param input
-     *            The String to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe Html tags.
-     * @return The processed String.
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final String input, final Decorator decorator, final boolean safeMode)
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
-    }
-
-    /**
      * Transforms an input file into Html using the default Configuration.
      * 
      * @param file
@@ -247,43 +214,6 @@ public class Processor
     public final static String process(final File file, final boolean safeMode) throws IOException
     {
         return process(file, Configuration.builder().setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input file into Html.
-     * 
-     * @param file
-     *            The File to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final Decorator decorator) throws IOException
-    {
-        return process(file, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input file into Html.
-     * 
-     * @param file
-     *            The File to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe Html tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final Decorator decorator, final boolean safeMode)
-            throws IOException
-    {
-        return process(file, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
     }
 
     /**
@@ -324,49 +254,6 @@ public class Processor
     }
 
     /**
-     * Transforms an input file into Html.
-     * 
-     * @param file
-     *            The File to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final String encoding, final Decorator decorator)
-            throws IOException
-    {
-        return process(file, Configuration.builder().setEncoding(encoding).setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input file into Html.
-     * 
-     * @param file
-     *            The File to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe Html tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final String encoding, final Decorator decorator,
-            final boolean safeMode) throws IOException
-    {
-        return process(file, Configuration.builder().setEncoding(encoding).setSafeMode(safeMode)
-                .setDecorator(decorator).build());
-    }
-
-    /**
      * Transforms an input stream into Html.
      * 
      * @param input
@@ -396,43 +283,6 @@ public class Processor
     public final static String process(final InputStream input, final boolean safeMode) throws IOException
     {
         return process(input, Configuration.builder().setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input stream into Html.
-     * 
-     * @param input
-     *            The InputStream to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final Decorator decorator) throws IOException
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input stream into Html.
-     * 
-     * @param input
-     *            The InputStream to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe Html tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final Decorator decorator, final boolean safeMode)
-            throws IOException
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
     }
 
     /**
@@ -473,49 +323,6 @@ public class Processor
     }
 
     /**
-     * Transforms an input stream into Html.
-     * 
-     * @param input
-     *            The InputStream to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final String encoding, final Decorator decorator)
-            throws IOException
-    {
-        return process(input, Configuration.builder().setEncoding(encoding).setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input stream into Html.
-     * 
-     * @param input
-     *            The InputStream to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe Html tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final String encoding, final Decorator decorator,
-            final boolean safeMode) throws IOException
-    {
-        return process(input,
-                Configuration.builder().setEncoding(encoding).setDecorator(decorator).setSafeMode(safeMode).build());
-    }
-
-    /**
      * Transforms an input stream into Html using the default Configuration.
      * 
      * @param reader
@@ -545,43 +352,6 @@ public class Processor
     public final static String process(final Reader reader, final boolean safeMode) throws IOException
     {
         return process(reader, Configuration.builder().setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input stream into Html.
-     * 
-     * @param reader
-     *            The Reader to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final Reader reader, final Decorator decorator) throws IOException
-    {
-        return process(reader, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input stream into Html.
-     * 
-     * @param reader
-     *            The Reader to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe Html tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final Reader reader, final Decorator decorator, final boolean safeMode)
-            throws IOException
-    {
-        return process(reader, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
     }
 
     /**
@@ -760,7 +530,7 @@ public class Processor
         Line line = root.lines;
 
         // Trigger `Block.onBeforeRecurse()`
-        for(Block block : config.flavour.getBlocks().values()) {
+        for(Block block : config.flavour.blocks.getTable().values()) {
             block.onBeforeRecurse(this, root, parent);
         }
 
@@ -775,7 +545,7 @@ public class Processor
             final LineType lineType = detectLineType(line, parent);
 
             // Retrieve matching block
-            Block block = config.flavour.getBlock(lineType.getId());
+            Block block = config.flavour.blocks.get(lineType.getId());
 
             if(block != null) {
                 // Process block
@@ -796,7 +566,7 @@ public class Processor
             return LineType.EMPTY;
 
         // Try match line against available blocks
-        for(Block block : config.flavour.getBlocksOrdered()) {
+        for(Block block : config.flavour.blocks.getOrdered()) {
             if(block.isMatch(line, parent)) {
                 return block.getLineType();
             }

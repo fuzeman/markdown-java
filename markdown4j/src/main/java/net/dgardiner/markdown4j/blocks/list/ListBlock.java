@@ -1,12 +1,12 @@
 package net.dgardiner.markdown4j.blocks.list;
 
+import net.dgardiner.markdown4j.core.types.BlockType;
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.LineType;
-import net.dgardiner.markdown4j.core.enums.BlockType;
+import net.dgardiner.markdown4j.core.types.LineType;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
-import net.dgardiner.markdown4j.flavours.base.Block;
+import net.dgardiner.markdown4j.blocks.core.Block;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +22,10 @@ public abstract class ListBlock extends Block {
 
     private BlockType blockType;
 
-    public ListBlock(String id, Integer priority, BlockType blockType) {
+    public ListBlock(String id, Integer priority) {
         super(id, priority);
 
-        this.blockType = blockType;
+        this.blockType = new BlockType(id);
     }
 
     @Override
@@ -77,11 +77,11 @@ public abstract class ListBlock extends Block {
 
             if((line.leading <= baseIndent && t.getKey().startsWith("list.")) || (!line.isEmpty && (line.prevEmpty && line.leading == 0 && !t.getKey().startsWith("list."))))
             {
-                root.split(line.previous).type = BlockType.LIST_ITEM;
+                root.split(line.previous).type = new BlockType("list-item");
             }
             line = line.next;
         }
-        root.split(root.lineTail).type = BlockType.LIST_ITEM;
+        root.split(root.lineTail).type = new BlockType("list-item");
     }
 
     @Override
@@ -105,7 +105,7 @@ public abstract class ListBlock extends Block {
             return BlockType.NONE;
         }
 
-        return BlockType.PARAGRAPH;
+        return new BlockType("paragraph");
     }
 
 

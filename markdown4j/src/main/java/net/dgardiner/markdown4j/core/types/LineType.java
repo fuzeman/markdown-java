@@ -1,6 +1,8 @@
-package net.dgardiner.markdown4j.core;
+package net.dgardiner.markdown4j.core.types;
 
-public class LineType {
+import net.dgardiner.markdown4j.core.base.Type;
+
+public class LineType implements Type {
     public static final LineType EMPTY = new LineType("empty");
     public static final LineType OTHER = new LineType("other");
 

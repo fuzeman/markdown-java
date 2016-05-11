@@ -1,15 +1,14 @@
 package net.dgardiner.markdown4j.blocks.list;
 
-import net.dgardiner.markdown4j.core.enums.BlockType;
+import net.dgardiner.markdown4j.blocks.core.Block;
 import net.dgardiner.markdown4j.core.parser.Line;
-import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class UnorderedListBlock extends ListBlock {
     public static final String ID = "list.unordered";
     public static final Integer PRIORITY = 300;
 
     public UnorderedListBlock() {
-        super(ID, PRIORITY, BlockType.UNORDERED_LIST);
+        super(ID, PRIORITY);
     }
 
     @Override

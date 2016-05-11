@@ -1,10 +1,11 @@
 package net.dgardiner.markdown4j.tokens.code;
 
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.TokenType;
+import net.dgardiner.markdown4j.core.types.TokenType;
 import net.dgardiner.markdown4j.core.Utils;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.core.Emitter;
 import net.dgardiner.markdown4j.tokens.base.Token;
+import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
 
 public class CodeSingleToken extends Token {
     public CodeSingleToken() { super("code.single"); }
@@ -33,9 +34,21 @@ public class CodeSingleToken extends Token {
                 while(in.charAt(b - 1) == ' ')
                     b--;
 
-                config.decorator.openCodeSpan(out);
-                Utils.appendCode(out, in, a, b);
-                config.decorator.closeCodeSpan(out);
+                // Try retrieve code decorator
+                TokenDecorator decorator = config.flavour.tokenDecorators.get(
+                    new TokenType(getTokenType().getGroup(), "code")
+                );
+
+                // Format token
+                if(decorator != null) {
+                    // Use decorator to format token
+                    decorator.open(config, emitter, out);
+                    Utils.appendCode(out, in, a, b);  // TODO Should this be piped through the decorator?
+                    decorator.close(config, emitter, out);
+                } else {
+                    // Plain text
+                    Utils.appendCode(out, in, a, b);
+                }
             }
         } else {
             out.append(in.charAt(pos));

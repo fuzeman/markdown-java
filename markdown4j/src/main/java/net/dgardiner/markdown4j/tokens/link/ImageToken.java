@@ -2,7 +2,8 @@ package net.dgardiner.markdown4j.tokens.link;
 
 import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.Utils;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.core.Emitter;
+import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
 import net.dgardiner.markdown4j.tokens.link.core.BaseLinkToken;
 
 public class ImageToken extends BaseLinkToken {
@@ -24,7 +25,14 @@ public class ImageToken extends BaseLinkToken {
 
     @Override
     public int decorate(Configuration config, Emitter emitter, final StringBuilder out, int pos, String name, String link, String comment, boolean isAbbrev, boolean useExtensions) {
-        config.decorator.openImage(out);
+        TokenDecorator decorator = config.flavour.tokenDecorators.get(this.getTokenType());
+
+        if(decorator != null) {
+            decorator.open(config, emitter, out);
+        } else {
+            out.append("<img");
+        }
+
         out.append(" src=\"");
         Utils.appendValue(out, link, 0, link.length());
         out.append("\" alt=\"");

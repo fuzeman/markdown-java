@@ -15,12 +15,6 @@
  */
 package net.dgardiner.markdown4j.core.parser;
 
-import net.dgardiner.markdown4j.core.Html;
-import net.dgardiner.markdown4j.core.LineType;
-import net.dgardiner.markdown4j.core.Utils;
-
-import java.util.LinkedList;
-
 /**
  * This class represents a text line.
  * 

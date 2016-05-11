@@ -1,9 +1,10 @@
 package net.dgardiner.markdown4j.tokens;
 
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.TokenType;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.core.types.TokenType;
+import net.dgardiner.markdown4j.core.Emitter;
 import net.dgardiner.markdown4j.tokens.base.Token;
+import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
 
 public class SuperToken extends Token {
     public SuperToken() { super("super"); }
@@ -24,9 +25,20 @@ public class SuperToken extends Token {
         int b = emitter.recursiveEmitLine(temp, in, pos + 1, tokenType);
 
         if(b > 0) {
-            config.decorator.openSuper(out);
-            out.append(temp);
-            config.decorator.closeSuper(out);
+            // Try retrieve matching decorator
+            TokenDecorator decorator = config.flavour.tokenDecorators.get(this.getTokenType());
+
+            // Format token
+            if(decorator != null) {
+                // Use decorator to format token
+                decorator.open(config, emitter, out);
+                decorator.body(config, emitter, out, temp);
+                decorator.close(config, emitter, out);
+            } else {
+                // Plain text
+                out.append(temp);
+            }
+
             pos = b;
         } else {
             out.append(in.charAt(pos));

@@ -1,26 +1,26 @@
 package net.dgardiner.markdown4j.tokens.base;
 
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.TokenType;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.core.Plugin;
+import net.dgardiner.markdown4j.core.types.TokenType;
+import net.dgardiner.markdown4j.core.Emitter;
 
-public abstract class Token implements Comparable<Token> {
+public abstract class Token extends Plugin {
     private final TokenType tokenType;
-    private final Integer priority;
 
     public Token(String id) {
         this(id, 0);
     }
-
     public Token(String id, Integer priority) {
+        super(priority);
+
         this.tokenType = new TokenType(id);
-        this.priority = priority;
     }
 
-    public String getId() { return tokenType.getId(); }
+    @Override
+    public String getId() { return this.tokenType.getId(); }
     public TokenType getTokenType() { return tokenType; }
     public TokenType getTokenType(int state) { return tokenType.withState(state); }
-    public Integer getPriority() { return priority; }
 
     public abstract int match(
         char value,
@@ -42,16 +42,4 @@ public abstract class Token implements Comparable<Token> {
     //
 
     public boolean isProcessed(TokenType tokenType, TokenType matched) { return false; }
-
-    //
-    // Comparable
-    //
-
-    @Override
-    public int compareTo(Token other) {
-        if(other == null)
-            throw new ClassCastException("Block object was expected");
-
-        return this.priority - other.priority;
-    }
 }

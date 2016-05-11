@@ -1,8 +1,8 @@
 package net.dgardiner.markdown4j.tokens;
 
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.TokenType;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.core.types.TokenType;
+import net.dgardiner.markdown4j.core.Emitter;
 import net.dgardiner.markdown4j.tokens.base.Token;
 
 import java.util.ArrayList;

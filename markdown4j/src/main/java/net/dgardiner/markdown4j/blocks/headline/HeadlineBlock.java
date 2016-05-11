@@ -1,12 +1,12 @@
 package net.dgardiner.markdown4j.blocks.headline;
 
+import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.core.types.BlockType;
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.LineType;
-import net.dgardiner.markdown4j.core.enums.BlockType;
+import net.dgardiner.markdown4j.core.types.LineType;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
-import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class HeadlineBlock extends Block {
     public static final String ID = "headline";
@@ -42,7 +42,7 @@ public class HeadlineBlock extends Block {
         processHeadline(line, lineType);
 
         Node node = root.split(line);
-        node.type = BlockType.HEADLINE;
+        node.type = new BlockType("headline");
         node.hlDepth = getHeadlineSize();
 
 //        if(this.useExtensions)

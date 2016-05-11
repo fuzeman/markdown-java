@@ -1,6 +1,8 @@
-package net.dgardiner.markdown4j.core;
+package net.dgardiner.markdown4j.core.types;
 
-public class TokenType {
+import net.dgardiner.markdown4j.core.base.Type;
+
+public class TokenType implements Type {
     public static final TokenType NONE = new TokenType("none");
 
     private String group;

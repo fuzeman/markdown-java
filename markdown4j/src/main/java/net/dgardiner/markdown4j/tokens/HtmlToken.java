@@ -2,10 +2,11 @@ package net.dgardiner.markdown4j.tokens;
 
 import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.Html;
-import net.dgardiner.markdown4j.core.TokenType;
+import net.dgardiner.markdown4j.core.types.TokenType;
 import net.dgardiner.markdown4j.core.Utils;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.core.Emitter;
 import net.dgardiner.markdown4j.tokens.base.Token;
+import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
 
 public class HtmlToken extends Token {
     public HtmlToken() { super("html"); }
@@ -20,10 +21,10 @@ public class HtmlToken extends Token {
     }
 
     @Override
-    public int process(Configuration config, Emitter emitter, final StringBuilder temp, final StringBuilder out, String in, int pos, TokenType tokenType) {
+    public int process(final Configuration config, final Emitter emitter, final StringBuilder temp, final StringBuilder out, String in, int pos, TokenType tokenType) {
         temp.setLength(0);
 
-        int b = this.checkHtml(config, temp, in, pos);
+        int b = this.checkHtml(config, emitter, temp, in, pos);
 
         if(b > 0) {
             out.append(temp);
@@ -47,7 +48,7 @@ public class HtmlToken extends Token {
      *            Starting position.
      * @return The new position or -1 if nothing valid has been found.
      */
-    private int checkHtml(Configuration config, final StringBuilder out, final String in, int start)
+    private int checkHtml(final Configuration config, final Emitter emitter, final StringBuilder out, final String in, int start)
     {
         final StringBuilder temp = new StringBuilder();
         int pos;
@@ -61,7 +62,15 @@ public class HtmlToken extends Token {
             if(pos != -1)
             {
                 final String link = temp.toString();
-                config.decorator.openLink(out);
+
+                TokenDecorator decorator = config.flavour.tokenDecorators.get(new TokenType(getTokenType().getGroup(), "link"));
+
+                if(decorator != null) {
+                    decorator.open(config, emitter, out);
+                } else {
+                    out.append("<a");
+                }
+
                 out.append(" href=\"");
                 Utils.appendValue(out, link, 0, link.length());
                 out.append("\">");
@@ -80,7 +89,15 @@ public class HtmlToken extends Token {
             if(pos != -1)
             {
                 final String link = temp.toString();
-                config.decorator.openLink(out);
+
+                TokenDecorator decorator = config.flavour.tokenDecorators.get(new TokenType(getTokenType().getGroup(), "link"));
+
+                if(decorator != null) {
+                    decorator.open(config, emitter, out);
+                } else {
+                    out.append("<a");
+                }
+
                 out.append(" href=\"");
 
                 //address auto links

@@ -1,18 +1,25 @@
 package net.dgardiner.markdown4j.flavours.basic;
 
 import net.dgardiner.markdown4j.blocks.*;
-import net.dgardiner.markdown4j.flavours.base.Flavour;
+import net.dgardiner.markdown4j.blocks.decorators.list.ListItemDecorator;
+import net.dgardiner.markdown4j.blocks.decorators.list.OrderedListDecorator;
+import net.dgardiner.markdown4j.blocks.decorators.list.UnorderedListDecorator;
 import net.dgardiner.markdown4j.blocks.headline.Headline1Block;
 import net.dgardiner.markdown4j.blocks.headline.Headline2Block;
 import net.dgardiner.markdown4j.blocks.headline.HeadlineBlock;
 import net.dgardiner.markdown4j.blocks.list.OrderedListBlock;
 import net.dgardiner.markdown4j.blocks.list.UnorderedListBlock;
+import net.dgardiner.markdown4j.blocks.decorators.*;
+import net.dgardiner.markdown4j.core.base.Flavour;
 import net.dgardiner.markdown4j.tokens.*;
 import net.dgardiner.markdown4j.tokens.characters.*;
 import net.dgardiner.markdown4j.tokens.characters.quote_angle.LeftAngleQuoteToken;
 import net.dgardiner.markdown4j.tokens.characters.quote_angle.RightAngleQuoteToken;
 import net.dgardiner.markdown4j.tokens.code.CodeDoubleToken;
 import net.dgardiner.markdown4j.tokens.code.CodeSingleToken;
+import net.dgardiner.markdown4j.tokens.decorators.*;
+import net.dgardiner.markdown4j.tokens.decorators.link.ImageDecorator;
+import net.dgardiner.markdown4j.tokens.decorators.link.LinkDecorator;
 import net.dgardiner.markdown4j.tokens.link.ImageToken;
 import net.dgardiner.markdown4j.tokens.link.LinkToken;
 import net.dgardiner.markdown4j.tokens.link.SpecialLinkToken;
@@ -33,14 +40,20 @@ public class BasicFlavour extends Flavour {
         register(new OrderedListBlock());
         register(new UnorderedListBlock());
 
+        // Register block decorators
+        register(new BlockquoteDecorator());
+        register(new CodeBlockDecorator());
+        register(new HeadlineDecorator());
+        register(new ParagraphDecorator());
+        register(new PluginDecorator());
+        register(new RulerDecorator());
+        register(new XmlDecorator());
+
+        register(new ListItemDecorator());
+        register(new OrderedListDecorator());
+        register(new UnorderedListDecorator());
+
         // Register tokens
-        register(new CodeDoubleToken());
-        register(new CodeSingleToken());
-
-        register(new ImageToken());
-        register(new LinkToken());
-        register(new SpecialLinkToken());
-
         register(new BoldToken());
         register(new EntityToken());
         register(new EscapeToken());
@@ -50,15 +63,32 @@ public class BasicFlavour extends Flavour {
         register(new StrikeToken());
         register(new SuperToken());
 
-        // Register characters
-        register(new LeftAngleQuoteToken());
-        register(new RightAngleQuoteToken());
+        register(new CodeDoubleToken());
+        register(new CodeSingleToken());
 
+        register(new ImageToken());
+        register(new LinkToken());
+        register(new SpecialLinkToken());
+
+        // Register token decorators
+        register(new BoldDecorator());
+        register(new CodeSpanDecorator());
+        register(new ItalicDecorator());
+        register(new StrikeDecorator());
+        register(new SuperDecorator());
+
+        register(new ImageDecorator());
+        register(new LinkDecorator());
+
+        // Register characters
         register(new CopyrightToken());
         register(new EllipsisToken());
         register(new EmDashToken());
         register(new EnDashToken());
         register(new RegisteredToken());
         register(new TrademarkToken());
+
+        register(new LeftAngleQuoteToken());
+        register(new RightAngleQuoteToken());
     }
 }

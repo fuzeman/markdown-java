@@ -1,9 +1,10 @@
 package net.dgardiner.markdown4j.tokens.link;
 
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.TokenType;
+import net.dgardiner.markdown4j.core.types.TokenType;
 import net.dgardiner.markdown4j.core.Utils;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
+import net.dgardiner.markdown4j.core.Emitter;
+import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
 import net.dgardiner.markdown4j.tokens.link.core.BaseLinkToken;
 
 public class LinkToken extends BaseLinkToken {
@@ -35,7 +36,14 @@ public class LinkToken extends BaseLinkToken {
             emitter.recursiveEmitLine(out, name, 0, TokenType.NONE);
             out.append("</abbr>");
         } else {
-            config.decorator.openLink(out);
+            TokenDecorator decorator = config.flavour.tokenDecorators.get(this.getTokenType());
+
+            if(decorator != null) {
+                decorator.open(config, emitter, out);
+            } else {
+                out.append("<a");
+            }
+
             out.append(" href=\"");
             Utils.appendValue(out, link, 0, link.length());
             out.append('"');

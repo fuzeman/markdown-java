@@ -1,14 +1,16 @@
 package net.dgardiner.markdown4j.flavours.github.tokens;
 
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.TokenType;
-import net.dgardiner.markdown4j.emitters.core.Emitter;
-import net.dgardiner.markdown4j.flavours.github.GithubDecorator;
+import net.dgardiner.markdown4j.core.types.TokenType;
+import net.dgardiner.markdown4j.core.Emitter;
 import net.dgardiner.markdown4j.tokens.base.Token;
+import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
 
 public class GithubEmojiToken extends Token {
+    public static final String ID = "github:emoji";
+
     public GithubEmojiToken() {
-        super("github:emoji");
+        super(ID);
     }
 
     @Override
@@ -34,7 +36,13 @@ public class GithubEmojiToken extends Token {
             String key = in.substring(pos + 1, b);
 
             if(!key.contains(" ")) {
-                ((GithubDecorator)config.decorator).emoji(out, key);
+                TokenDecorator decorator = config.flavour.tokenDecorators.get(getTokenType());
+
+                if(decorator == null || !decorator.open(config, emitter, out, key)) {
+                    out.append(in.charAt(pos));
+                    return pos;
+                }
+
                 pos = b;
             } else {
                 out.append(in.charAt(pos));

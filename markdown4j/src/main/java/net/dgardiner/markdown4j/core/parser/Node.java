@@ -15,10 +15,7 @@
  */
 package net.dgardiner.markdown4j.core.parser;
 
-import net.dgardiner.markdown4j.core.LineType;
-import net.dgardiner.markdown4j.core.enums.BlockType;
-
-import java.util.logging.Logger;
+import net.dgardiner.markdown4j.core.types.BlockType;
 
 /**
  * This class represents a block of lines.
@@ -35,7 +32,7 @@ public class Node
     public Node nodes = null, nodeTail = null;
     /** Next block. */
     public Node next = null;
-    /** Depth of headline BlockType. */
+    /** Depth of headline LegacyBlockType. */
     public int hlDepth = 0;
     /** ID for headlines and list items */
     public String id = null;
@@ -235,42 +232,41 @@ public class Node
      */
     public void expandListParagraphs()
     {
-        if(this.type != BlockType.ORDERED_LIST && this.type != BlockType.UNORDERED_LIST)
-        {
+        if(!this.type.equals(new BlockType("list.ordered")) && !this.type.equals(new BlockType("list.unordered"))) {
             return;
         }
+
         Node outer = this.nodes, inner;
         boolean hasParagraph = false;
-        while(outer != null && !hasParagraph)
-        {
-            if(outer.type == BlockType.LIST_ITEM)
-            {
+
+        while(outer != null && !hasParagraph) {
+            if(outer.type.equals(new BlockType("list-item"))) {
                 inner = outer.nodes;
-                while(inner != null && !hasParagraph)
-                {
-                    if(inner.type == BlockType.PARAGRAPH)
-                    {
+
+                while(inner != null && !hasParagraph) {
+                    if(inner.type.equals(new BlockType("paragraph"))) {
                         hasParagraph = true;
                     }
+
                     inner = inner.next;
                 }
             }
+
             outer = outer.next;
         }
-        if(hasParagraph)
-        {
+
+        if(hasParagraph) {
             outer = this.nodes;
-            while(outer != null)
-            {
-                if(outer.type == BlockType.LIST_ITEM)
-                {
+
+            while(outer != null) {
+                if(outer.type.equals(new BlockType("list-item"))) {
                     inner = outer.nodes;
-                    while(inner != null)
-                    {
-                        if(inner.type == BlockType.NONE)
-                        {
-                            inner.type = BlockType.PARAGRAPH;
+
+                    while(inner != null) {
+                        if(inner.type.equals(BlockType.NONE)) {
+                            inner.type = new BlockType("paragraph");
                         }
+
                         inner = inner.next;
                     }
                 }

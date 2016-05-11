@@ -1,12 +1,12 @@
 package net.dgardiner.markdown4j.blocks;
 
+import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.core.types.BlockType;
 import net.dgardiner.markdown4j.core.Configuration;
-import net.dgardiner.markdown4j.core.LineType;
-import net.dgardiner.markdown4j.core.enums.BlockType;
+import net.dgardiner.markdown4j.core.types.LineType;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
-import net.dgardiner.markdown4j.flavours.base.Block;
 
 public class OtherBlock extends Block {
     public static final String ID = "other";
@@ -41,7 +41,7 @@ public class OtherBlock extends Block {
             }
 
             // Check if block will process this line
-            Block b = config.flavour.getBlock(tId);
+            Block b = config.flavour.blocks.get(tId);
 
             if(b != null && b.isAcceptedLine(line, t)) {
                 break;
@@ -49,16 +49,15 @@ public class OtherBlock extends Block {
 
             line = line.next;
         }
+
         final BlockType bt;
-        if(line != null && !line.isEmpty)
-        {
-            bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : BlockType.PARAGRAPH;
+
+        if(line != null && !line.isEmpty) {
+            bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : new BlockType("paragraph");
             root.split(line.previous).type = bt;
             root.removeLeadingEmptyLines();
-        }
-        else
-        {
-            bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : BlockType.PARAGRAPH;
+        } else {
+            bt = (parent != null && acceptedChild) ? parent.getChildType(line, wasEmpty) : new BlockType("paragraph");
             root.split(line == null ? root.lineTail : line).type = bt;
             root.removeLeadingEmptyLines();
         }
