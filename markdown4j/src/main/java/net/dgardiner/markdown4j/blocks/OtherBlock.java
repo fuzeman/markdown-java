@@ -1,6 +1,6 @@
 package net.dgardiner.markdown4j.blocks;
 
-import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.blocks.base.Block;
 import net.dgardiner.markdown4j.core.types.BlockType;
 import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.types.LineType;

@@ -18,9 +18,8 @@ package net.dgardiner.markdown4j.core;
 import java.util.HashMap;
 
 import net.dgardiner.markdown4j.core.parser.Node;
-import net.dgardiner.markdown4j.core.*;
 import net.dgardiner.markdown4j.core.parser.Line;
-import net.dgardiner.markdown4j.blocks.decorators.core.BlockDecorator;
+import net.dgardiner.markdown4j.decorators.blocks.base.BlockDecorator;
 import net.dgardiner.markdown4j.core.types.TokenType;
 import net.dgardiner.markdown4j.tokens.base.Token;
 

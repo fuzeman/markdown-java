@@ -2,11 +2,11 @@ package net.dgardiner.markdown4j.flavours.github;
 
 import net.dgardiner.markdown4j.blocks.FencedCodeBlock;
 import net.dgardiner.markdown4j.flavours.basic.BasicFlavour;
-import net.dgardiner.markdown4j.blocks.decorators.FencedCodeBlockDecorator;
+import net.dgardiner.markdown4j.decorators.blocks.FencedCodeBlockDecorator;
 import net.dgardiner.markdown4j.flavours.github.tokens.GithubEmojiToken;
 import net.dgardiner.markdown4j.flavours.github.tokens.GithubUsernameToken;
-import net.dgardiner.markdown4j.flavours.github.tokens.decorators.GithubEmojiDecorator;
-import net.dgardiner.markdown4j.flavours.github.tokens.decorators.GithubUsernameDecorator;
+import net.dgardiner.markdown4j.flavours.github.decorators.tokens.GithubEmojiDecorator;
+import net.dgardiner.markdown4j.flavours.github.decorators.tokens.GithubUsernameDecorator;
 
 public class GithubFlavour extends BasicFlavour {
     public GithubFlavour() {

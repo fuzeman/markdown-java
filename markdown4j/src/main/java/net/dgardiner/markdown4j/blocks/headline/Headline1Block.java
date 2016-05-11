@@ -2,7 +2,7 @@ package net.dgardiner.markdown4j.blocks.headline;
 
 import net.dgardiner.markdown4j.core.types.LineType;
 import net.dgardiner.markdown4j.core.parser.Line;
-import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.blocks.base.Block;
 
 public class Headline1Block extends HeadlineBlock {
     public static final String ID = "headline.1";

@@ -7,7 +7,7 @@ import net.dgardiner.markdown4j.core.Utils;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
-import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.blocks.base.Block;
 
 public class FencedCodeBlock extends Block {
     public static final String ID = "fenced-code";

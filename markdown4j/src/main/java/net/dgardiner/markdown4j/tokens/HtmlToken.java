@@ -6,7 +6,7 @@ import net.dgardiner.markdown4j.core.types.TokenType;
 import net.dgardiner.markdown4j.core.Utils;
 import net.dgardiner.markdown4j.core.Emitter;
 import net.dgardiner.markdown4j.tokens.base.Token;
-import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
+import net.dgardiner.markdown4j.decorators.tokens.base.TokenDecorator;
 
 public class HtmlToken extends Token {
     public HtmlToken() { super("html"); }

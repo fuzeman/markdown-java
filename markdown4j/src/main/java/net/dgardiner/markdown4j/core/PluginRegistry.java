@@ -1,7 +1,7 @@
 package net.dgardiner.markdown4j.core;
 
 import net.dgardiner.markdown4j.core.base.Type;
-import net.dgardiner.markdown4j.core.base.Flavour;
+import net.dgardiner.markdown4j.flavours.base.Flavour;
 
 import java.util.ArrayList;
 import java.util.Collections;

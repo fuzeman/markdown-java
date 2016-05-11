@@ -18,7 +18,7 @@ package net.dgardiner.markdown4j.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.dgardiner.markdown4j.core.base.Flavour;
+import net.dgardiner.markdown4j.flavours.base.Flavour;
 import net.dgardiner.markdown4j.core.base.SpanEmitter;
 import net.dgardiner.markdown4j.flavours.basic.BasicFlavour;
 import net.dgardiner.markdown4j.plugins.core.Plugin;

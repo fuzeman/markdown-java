@@ -1,6 +1,6 @@
 package net.dgardiner.markdown4j.blocks.list;
 
-import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.blocks.base.Block;
 import net.dgardiner.markdown4j.core.parser.Line;
 
 public class UnorderedListBlock extends ListBlock {

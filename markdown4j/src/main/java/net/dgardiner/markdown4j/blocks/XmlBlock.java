@@ -4,7 +4,7 @@ import net.dgardiner.markdown4j.core.*;
 import net.dgardiner.markdown4j.core.parser.Line;
 import net.dgardiner.markdown4j.core.parser.Node;
 import net.dgardiner.markdown4j.core.parser.Processor;
-import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.blocks.base.Block;
 import net.dgardiner.markdown4j.core.types.BlockType;
 import net.dgardiner.markdown4j.core.types.LineType;
 

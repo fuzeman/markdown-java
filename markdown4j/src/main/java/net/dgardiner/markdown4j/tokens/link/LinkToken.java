@@ -4,7 +4,7 @@ import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.types.TokenType;
 import net.dgardiner.markdown4j.core.Utils;
 import net.dgardiner.markdown4j.core.Emitter;
-import net.dgardiner.markdown4j.tokens.decorators.core.TokenDecorator;
+import net.dgardiner.markdown4j.decorators.tokens.base.TokenDecorator;
 import net.dgardiner.markdown4j.tokens.link.core.BaseLinkToken;
 
 public class LinkToken extends BaseLinkToken {

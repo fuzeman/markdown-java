@@ -18,7 +18,7 @@ package net.dgardiner.markdown4j.core.parser;
 import net.dgardiner.markdown4j.core.Configuration;
 import net.dgardiner.markdown4j.core.types.LineType;
 import net.dgardiner.markdown4j.core.LinkRef;
-import net.dgardiner.markdown4j.blocks.core.Block;
+import net.dgardiner.markdown4j.blocks.base.Block;
 import net.dgardiner.markdown4j.core.Emitter;
 
 import java.io.BufferedReader;
