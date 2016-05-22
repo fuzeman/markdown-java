@@ -1,12 +1,16 @@
 package net.dgardiner.markdown.decorators.blocks.base;
 
-import net.dgardiner.markdown.core.types.BlockType;
 import net.dgardiner.markdown.core.Configuration;
+import net.dgardiner.markdown.core.Emitter;
 import net.dgardiner.markdown.core.Plugin;
 import net.dgardiner.markdown.core.parser.Node;
-import net.dgardiner.markdown.core.Emitter;
+import net.dgardiner.markdown.core.types.BlockType;
+
+import java.util.logging.Logger;
 
 public abstract class BlockDecorator extends Plugin {
+    private final static Logger LOGGER = Logger.getLogger(BlockDecorator.class.getName());
+
     private final BlockType blockType;
 
     public BlockDecorator(String id) {
@@ -96,12 +100,22 @@ public abstract class BlockDecorator extends Plugin {
             // Retrieve decorator for next node
             decorator = config.flavour.blockDecorators.get(root.next.type);
 
+            if(decorator == null) {
+                LOGGER.warning("Unable to find decorator for \"" + root.next.type.getId() + "\"");
+                return false;
+            }
+
             // Retrieve parameters
             separation = decorator.getSeparation(config, root);
             indent = decorator.getSeparationIndent(config, root) + indentOffset;
         } else if(root.container != null) {
             // Retrieve decorator for container
             decorator = config.flavour.blockDecorators.get(root.container.getLineType());
+
+            if(decorator == null) {
+                LOGGER.warning("Unable to find decorator for \"" + root.container.getLineType().getId() + "\"");
+                return false;
+            }
 
             // Retrieve parameters
             separation = decorator.getChildSeparation(config, root);
