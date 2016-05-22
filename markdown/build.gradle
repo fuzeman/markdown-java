@@ -1,6 +1,6 @@
 apply plugin: 'java'
 
-group 'net.dgardiner.markdown4j'
+group 'net.dgardiner.markdown'
 version '1.0'
 
 dependencies {

@@ -20,8 +20,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="markdown4j-markdown4j_main" target="1.7" />
-      <module name="markdown4j-markdown4j_test" target="1.7" />
+      <module name="markdown_main" target="1.7" />
+      <module name="markdown_test" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
