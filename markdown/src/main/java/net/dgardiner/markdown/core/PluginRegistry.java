@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 public class PluginRegistry<T extends Plugin> {
     private final static Logger LOGGER = Logger.getLogger(Flavour.class.getName());
 
-    private HashMap<String, T> table = new HashMap<>();
-    private List<T> ordered = new ArrayList<>();
+    private HashMap<String, T> table = new HashMap<String, T>();
+    private List<T> ordered = new ArrayList<T>();
 
     //
     // Properties

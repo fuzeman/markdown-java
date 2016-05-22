@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/markdown/markdown.iml" filepath="$PROJECT_DIR$/.idea/modules/markdown/markdown.iml" group="markdown" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/markdown-java.iml" filepath="$PROJECT_DIR$/.idea/modules/markdown-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/markdown-java_main.iml" filepath="$PROJECT_DIR$/.idea/modules/markdown-java_main.iml" group="markdown-java" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/markdown-java_test.iml" filepath="$PROJECT_DIR$/.idea/modules/markdown-java_test.iml" group="markdown-java" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/markdown/markdown_main.iml" filepath="$PROJECT_DIR$/.idea/modules/markdown/markdown_main.iml" group="markdown" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/markdown/markdown_test.iml" filepath="$PROJECT_DIR$/.idea/modules/markdown/markdown_test.iml" group="markdown" />
     </modules>

@@ -27,7 +27,7 @@ public class GithubTests {
 
     @Parameters(name = "{index}: {1}")
     public static List getTestFiles() {
-        List list = new ArrayList<>();
+        List list = new ArrayList<Object>();
 
         File dir = new File(GithubTests.class.getResource(TESTS_DIR).getFile());
         File[] dirEntries = dir.listFiles();

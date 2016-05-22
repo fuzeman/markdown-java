@@ -63,7 +63,7 @@ public class MarkdownTestTester {
 
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> markdownTests() {
-        List list = new ArrayList<>();
+        List list = new ArrayList<Object>();
         URL fileUrl = MarkdownTestTester.class.getResource(MARKDOWN_TEST_DIR);
         File dir;
 

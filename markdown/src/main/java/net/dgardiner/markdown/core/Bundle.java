@@ -6,7 +6,7 @@ public class Bundle {
     private HashMap<String, Object> entries;
 
     public Bundle() {
-        this.entries = new HashMap<>();
+        this.entries = new HashMap<String, Object>();
     }
 
     public <T> T get(String key) {
@@ -36,6 +36,6 @@ public class Bundle {
     }
 
     public Bundle copy() {
-        return new Bundle(new HashMap<>(entries));
+        return new Bundle(new HashMap<String, Object>(entries));
     }
 }

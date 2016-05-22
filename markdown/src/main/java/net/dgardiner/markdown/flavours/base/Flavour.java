@@ -7,11 +7,11 @@ import net.dgardiner.markdown.tokens.base.Token;
 import net.dgardiner.markdown.decorators.tokens.base.TokenDecorator;
 
 public class Flavour {
-    public final PluginRegistry<Block> blocks = new PluginRegistry<>();
-    public final PluginRegistry<BlockDecorator> blockDecorators = new PluginRegistry<>();
+    public final PluginRegistry<Block> blocks = new PluginRegistry<Block>();
+    public final PluginRegistry<BlockDecorator> blockDecorators = new PluginRegistry<BlockDecorator>();
 
-    public final PluginRegistry<Token> tokens = new PluginRegistry<>();
-    public final PluginRegistry<TokenDecorator> tokenDecorators = new PluginRegistry<>();
+    public final PluginRegistry<Token> tokens = new PluginRegistry<Token>();
+    public final PluginRegistry<TokenDecorator> tokenDecorators = new PluginRegistry<TokenDecorator>();
 
     //
     // Methods
