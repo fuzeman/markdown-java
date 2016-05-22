@@ -13,7 +13,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static net.dgardiner.markdown.core.matchers.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(value = Parameterized.class)
 public class GithubTests {
@@ -67,7 +68,7 @@ public class GithubTests {
         String testText = slurp(dir + File.separator + name + ".md");
         String htmlText = slurp(dir + File.separator + name + ".html");
 
-        assertEquals(name, htmlText.trim(), processor.process(testText).trim());
+        assertThat(name, processor.process(testText).trim(), equalToIgnoringWhiteSpace(htmlText.trim()));
     }
 
     private String slurp(String fileName) throws IOException {
