@@ -24,15 +24,24 @@ public class GithubTaskListBlock extends UnorderedListBlock {
             return false;
         }
 
-        // Find checkbox start character
+        // Find checkbox start
         int start = line.value.indexOf("[", line.leading + 1);
 
         if(start < 0) {
             return false;
         }
 
-        // Find checkbox end character
-        return line.value.indexOf("]", start) >= 0;
+        // Find checkbox end
+        int end = line.value.indexOf("]", start);
+
+        if(end < 0) {
+            return false;
+        }
+
+        // Validate checkbox value
+        int size = end - start;
+
+        return size >= 1 && size <= 2;
     }
 
     @Override
