@@ -9,6 +9,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,27 +30,43 @@ public class GithubTests {
     public static List getTestFiles() {
         List list = new ArrayList<Object>();
 
-        File dir = new File(GithubTests.class.getResource(TESTS_DIR).getFile());
-        File[] dirEntries = dir.listFiles();
+        // Discover tests in directory
+        discoverTests(list, new File(GithubTests.class.getResource(TESTS_DIR).getFile()));
 
-        if(dirEntries == null) {
-            return list;
+        return list;
+    }
+
+    private static void discoverTests(List out, File path) {
+        discoverTests(out, path, path);
+    }
+
+    private static void discoverTests(List out, File path, File root) {
+        File[] children = path.listFiles();
+
+        if(children == null) {
+            return;
         }
 
-        for (File dirEntry : dirEntries) {
-            String filename = dirEntry.getName();
+        for(File item : children) {
+            if(item.isDirectory()) {
+                // Discover tests in directory
+                discoverTests(out, item, root);
+                continue;
+            }
+
+            // Parse file
+            String filename = item.getName();
 
             if (!filename.endsWith(".md")) {
                 continue;
             }
 
-            list.add(new Object[]{
-                TESTS_DIR,
+            // Add entry for test file
+            out.add(new Object[]{
+                item.getParent(),
                 filename.substring(0, filename.lastIndexOf('.'))
             });
         }
-
-        return list;
     }
 
     public GithubTests(String dir, String name) {
@@ -72,7 +89,7 @@ public class GithubTests {
     }
 
     private String slurp(String fileName) throws IOException {
-        File file = new File(URLDecoder.decode(GithubTests.class.getResource(fileName).getFile(), "UTF-8"));
+        File file = new File(URLDecoder.decode(fileName, "UTF-8"));
         FileReader in = new FileReader(file);
 
         StringBuffer sb = new StringBuffer();
