@@ -12,7 +12,9 @@ public class ParagraphDecorator extends BlockDecorator{
 
     @Override
     public boolean open(final Configuration config, final Emitter emitter, final StringBuilder out, final Node root) {
-        writeIndentation(config, out, root);
+        if(root.container == null || root.container.getLineType().getKey().equals("blockquote")) {
+            writeIndentation(config, out, root);
+        }
 
         out.append("<p>");
         return true;
