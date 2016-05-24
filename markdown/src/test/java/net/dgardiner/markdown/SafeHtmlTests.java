@@ -1,6 +1,5 @@
 package net.dgardiner.markdown;
 
-import net.dgardiner.markdown.flavours.github.GithubFlavour;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -13,8 +12,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static net.dgardiner.markdown.core.matchers.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(value = Parameterized.class)
 public class SafeHtmlTests {
