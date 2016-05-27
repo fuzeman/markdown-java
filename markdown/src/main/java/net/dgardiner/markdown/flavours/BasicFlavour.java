@@ -66,6 +66,9 @@ public class BasicFlavour extends Flavour {
         register(new CodeDoubleToken());
         register(new CodeSingleToken());
 
+        register(new GreaterThanToken());
+        register(new LessThanToken());
+
         register(new ImageToken());
         register(new LinkToken());
         register(new SpecialLinkToken());
