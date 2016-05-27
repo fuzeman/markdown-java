@@ -567,7 +567,7 @@ public class Utils
 
                 tag = temp.toString().trim().toLowerCase();
 
-                if(Html.isUnsafeHtmlElement(tag)) {
+                if(Html.isUnsafeHtmlElement(tag) || !Html.isHtmlElement(tag)) {
                     out.append("&lt;");
                 } else {
                     out.append("<");
@@ -592,7 +592,7 @@ public class Utils
             pos = readRawUntil(out, in, pos, '>');
 
             if(in.charAt(pos) == '>') {
-                if(safeMode && Html.isUnsafeHtmlElement(tag)) {
+                if(safeMode && (Html.isUnsafeHtmlElement(tag) || !Html.isHtmlElement(tag))) {
                     out.append("&gt;");
                 } else {
                     out.append('>');
