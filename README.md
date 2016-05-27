@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies { 
-    compile 'net.dgardiner.markdown:markdown:1.0.0'
+    compile 'net.dgardiner.markdown:markdown:1.1.0'
 }
 ```
 

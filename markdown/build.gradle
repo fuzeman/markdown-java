@@ -4,7 +4,7 @@ plugins {
 
 apply plugin: 'java'
 
-def currentVersion = '1.0.0'
+def currentVersion = '1.1.0'
 
 group = 'net.dgardiner.markdown'
 version = currentVersion
