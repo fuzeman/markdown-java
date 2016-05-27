@@ -33,7 +33,7 @@ public class PluginRegistry<T extends Plugin> {
         String id = plugin.getId();
 
         if(table.containsKey(id)) {
-            LOGGER.info("Replaced plugin: \"" + id + "\"");
+            LOGGER.info("[" + id + "] Replaced with: " + plugin);
         }
 
         // Update table

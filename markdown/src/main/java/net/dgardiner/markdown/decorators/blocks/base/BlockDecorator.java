@@ -5,6 +5,7 @@ import net.dgardiner.markdown.core.Emitter;
 import net.dgardiner.markdown.core.Plugin;
 import net.dgardiner.markdown.core.parser.Node;
 import net.dgardiner.markdown.core.types.BlockType;
+import net.dgardiner.markdown.core.types.LineType;
 
 import java.util.logging.Logger;
 
@@ -101,7 +102,10 @@ public abstract class BlockDecorator extends Plugin {
             decorator = config.flavour.blockDecorators.get(root.next.type);
 
             if(decorator == null) {
-                LOGGER.warning("Unable to find decorator for \"" + root.next.type.getId() + "\"");
+                if(!root.next.type.equals(BlockType.NONE)) {
+                    LOGGER.warning("Unable to find decorator for \"" + root.next.type.getId() + "\"");
+                }
+
                 return false;
             }
 
@@ -113,7 +117,10 @@ public abstract class BlockDecorator extends Plugin {
             decorator = config.flavour.blockDecorators.get(root.container.getLineType());
 
             if(decorator == null) {
-                LOGGER.warning("Unable to find decorator for \"" + root.container.getLineType().getId() + "\"");
+                if(!root.container.getLineType().equals(LineType.EMPTY)) {
+                    LOGGER.warning("Unable to find decorator for \"" + root.container.getLineType().getId() + "\"");
+                }
+
                 return false;
             }
 
