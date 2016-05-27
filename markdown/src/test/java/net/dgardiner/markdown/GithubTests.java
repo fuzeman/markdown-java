@@ -74,10 +74,12 @@ public class GithubTests {
         this.name = name;
 
         this.processor = new MarkdownProcessor();
-        this.processor.setFlavour(new GithubFlavour());
+        this.processor.setLineBreaks(true);
         this.processor.setCompactLists(false);
+        this.processor.setFlavour(new GithubFlavour());
         this.processor.setIndentEmptyLines(false);
         this.processor.setIndentSize(4);
+
     }
 
     @Test

@@ -33,7 +33,9 @@ public class PreserveHtmlBlockTagsTest {
     }
 
     public PreserveHtmlBlockTagsTest(String value) {
-        this.m      = new MarkdownProcessor();
+        this.m = new MarkdownProcessor();
+        this.m.setSafeMode(false);
+
         this.value  = value;
     }
 
@@ -41,5 +43,4 @@ public class PreserveHtmlBlockTagsTest {
     public void testRoundtripPreservesTags() throws IOException {
         assertEquals(value, m.process(value).trim());
     }
-
 }

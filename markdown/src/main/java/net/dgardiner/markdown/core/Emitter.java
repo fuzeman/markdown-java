@@ -110,7 +110,7 @@ public class Emitter
 
         while(line != null) {
             if(!line.isEmpty) {
-                if(line.trailing >= 2 && !config.convertNewline2Br) {
+                if(line.trailing >= 2 && !config.lineBreaks) {
                     in.append(line.value.substring(line.leading, line.value.length() - 2));
                     in.append("<br>");
                 } else {
@@ -119,11 +119,11 @@ public class Emitter
             }
 
             if(line.next != null) {
-                in.append('\n');
-
-                if(config.convertNewline2Br) {
+                if(config.lineBreaks) {
                     in.append("<br>");
                 }
+
+                in.append('\n');
             }
 
             line = line.next;

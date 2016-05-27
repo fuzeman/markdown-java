@@ -56,7 +56,7 @@ public class SafeHtmlTests {
         this.name = name;
 
         this.processor = new MarkdownProcessor();
-        this.processor.enableSafeMode();
+        this.processor.setSafeMode(true);
     }
 
     @Test

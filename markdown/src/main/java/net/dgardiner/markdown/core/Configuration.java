@@ -36,7 +36,7 @@ public class Configuration {
     public final Flavour flavour;
 
     public final boolean forceExtendedProfile;
-    public final boolean convertNewline2Br;
+    public final boolean lineBreaks;
 
     public final boolean compactLists;
 
@@ -82,7 +82,7 @@ public class Configuration {
      * @param safeMode
      * @param encoding
      */
-    Configuration(boolean safeMode, String encoding, Flavour flavour, boolean forceExtendedProfile, boolean convertNewline2Br,
+    Configuration(boolean safeMode, String encoding, Flavour flavour, boolean forceExtendedProfile, boolean lineBreaks,
                   boolean compactLists, String indentCharacter, boolean indentEmptyLines, int indentSize,
                   SpanEmitter specialLinkEmitter, Map<String, Plugin> plugins)
     {
@@ -90,7 +90,7 @@ public class Configuration {
         this.encoding = encoding;
         this.flavour = flavour;
 
-        this.convertNewline2Br = convertNewline2Br;
+        this.lineBreaks = lineBreaks;
         this.forceExtendedProfile = forceExtendedProfile;
 
         this.compactLists = compactLists;
@@ -120,13 +120,13 @@ public class Configuration {
      * @since 0.7
      */
     public static class Builder {
-        private boolean safeMode = false;
+        private boolean safeMode = true;
         private String encoding = "UTF-8";
 
         private Flavour flavour = new BasicFlavour();
 
         private boolean forceExtendedProfile = false;
-        private boolean convertNewline2Br = false;
+        private boolean lineBreaks = false;
 
         private boolean compactLists = true;
 
@@ -170,12 +170,12 @@ public class Configuration {
         }
         
         /**
-         * convertNewline2Br.
+         * setLineBreaks.
          * 
          * @return This builder.
          */
-        public Builder convertNewline2Br() {
-            this.convertNewline2Br = true;
+        public Builder setLineBreaks(boolean value) {
+            this.lineBreaks = value;
             return this;
         }
 
@@ -286,7 +286,7 @@ public class Configuration {
                 this.flavour,
 
                 this.forceExtendedProfile,
-                this.convertNewline2Br,
+                this.lineBreaks,
 
                 this.compactLists,
 

@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.Reader;
 
 public class MarkdownProcessor {
-	
 	private Builder builder;
 
 	public MarkdownProcessor() {
@@ -23,23 +22,22 @@ public class MarkdownProcessor {
 		return Configuration.builder();
 	}
 
-	public MarkdownProcessor enableSafeMode() {
-		builder.enableSafeMode();
-		return this;
-	}
+	//
+	// Options
+	//
 
-	public MarkdownProcessor registerPlugins(Plugin... plugins) {
-		builder.registerPlugins(plugins);
-		return this;
-	}
-
-	public MarkdownProcessor setFlavour(Flavour flavour) {
-		builder.setFlavour(flavour);
+	public MarkdownProcessor setLineBreaks(boolean value) {
+		builder.setLineBreaks(value);
 		return this;
 	}
 
 	public MarkdownProcessor setCompactLists(boolean value) {
 		builder.setCompactLists(value);
+		return this;
+	}
+
+	public MarkdownProcessor setFlavour(Flavour flavour) {
+		builder.setFlavour(flavour);
 		return this;
 	}
 
@@ -58,6 +56,15 @@ public class MarkdownProcessor {
 		return this;
 	}
 
+	public MarkdownProcessor setSafeMode(boolean value) {
+		builder.setSafeMode(value);
+		return this;
+	}
+
+	//
+	// Methods
+	//
+
 	public String process(File file) throws IOException {
 		return Processor.process(file, builder.build());
 	}
@@ -72,5 +79,10 @@ public class MarkdownProcessor {
 
 	public String process(String input) throws IOException {
 		return Processor.process(input, builder.build());
+	}
+
+	public MarkdownProcessor registerPlugins(Plugin... plugins) {
+		builder.registerPlugins(plugins);
+		return this;
 	}
 }
