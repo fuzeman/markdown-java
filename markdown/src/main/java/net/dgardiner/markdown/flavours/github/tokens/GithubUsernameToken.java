@@ -14,13 +14,13 @@ public class GithubUsernameToken extends Token {
     }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if (value != '@') {
             return 0;
         }
 
         if(leading[0] == ' ' && trailing[0] != ' ') {
-            return 1;
+            return state;
         }
 
         return 0;

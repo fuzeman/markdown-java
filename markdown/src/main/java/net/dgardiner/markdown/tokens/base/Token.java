@@ -6,6 +6,11 @@ import net.dgardiner.markdown.core.types.TokenType;
 import net.dgardiner.markdown.core.Emitter;
 
 public abstract class Token extends Plugin {
+    public static final int NONE    = 0;
+    public static final int GENERIC = 1;
+    public static final int OPEN    = 2;
+    public static final int CLOSE   = 3;
+
     private final TokenType tokenType;
 
     public Token(String id) {
@@ -25,7 +30,8 @@ public abstract class Token extends Plugin {
     public abstract int match(
         char value,
         char[] leading,
-        char[] trailing
+        char[] trailing,
+        int state
     );
 
     public abstract int process(

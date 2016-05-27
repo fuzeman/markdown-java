@@ -6,38 +6,84 @@ import net.dgardiner.markdown.core.Emitter;
 import net.dgardiner.markdown.tokens.base.Token;
 import net.dgardiner.markdown.decorators.tokens.base.TokenDecorator;
 
+import java.util.logging.Logger;
+
 public class ItalicToken extends Token {
-    public ItalicToken() { super("italic"); }
+    public static final int OPEN_STAR        = (1 << 8) + 2;
+    public static final int OPEN_UNDERSCORE  = (2 << 8) + 2;
+
+    public static final int CLOSE_STAR       = (1 << 8) + 3;
+    public static final int CLOSE_UNDERSCORE = (2 << 8) + 3;
+
+    private final boolean underscoreSpacing;
+
+    public ItalicToken() {
+        super("italic");
+
+        this.underscoreSpacing = true;
+    }
+
+    public ItalicToken(boolean underscoreSpacing) {
+        super("italic");
+
+        this.underscoreSpacing = underscoreSpacing;
+    }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value != '*' && value != '_') {
-            return 0;
+            return NONE;
         }
 
-        // Ensure there is only one character
-        if(trailing[0] == value) {
-            if(leading[0] == ' ' && trailing[1] == ' ') {
-                return 1;
+        // Star
+        if(value == '*') {
+            int side = state & 0x7f;
+
+            if(side == CLOSE) {
+                return CLOSE_STAR;
             }
 
-            return 0;
+            if(trailing[0] != '*') {
+                return state == GENERIC ? OPEN_STAR : CLOSE_STAR;
+            }
+
+            return NONE;
         }
 
-        if(leading[0] != ' ' || trailing[0] != ' ') {
-            return 1;
+        // Underscore
+        int side = state & 0x7f;
+
+        if(side == CLOSE) {
+            return CLOSE_UNDERSCORE;
         }
 
-        return 0;
+        if(trailing[0] == '_') {
+            return NONE;
+        }
+
+        if(underscoreSpacing) {
+            if (leading[0] == ' ') {
+                return OPEN_UNDERSCORE;
+            }
+
+            if (trailing[0] == ' ') {
+                return CLOSE_UNDERSCORE;
+            }
+        } else {
+            return state == GENERIC ? OPEN_UNDERSCORE : CLOSE_UNDERSCORE;
+        }
+
+        return NONE;
     }
 
     @Override
     public int process(Configuration config, Emitter emitter, final StringBuilder temp, final StringBuilder out, String in, int pos, TokenType tokenType) {
         temp.setLength(0);
 
-        int b = emitter.recursiveEmitLine(temp, in, pos + 1, tokenType);
+        int endState = getEndState(in, pos);
+        int end = emitter.recursiveEmitLine(temp, in, pos + 1, tokenType.withState(endState), endState);
 
-        if(b > 0) {
+        if(end > 0) {
             // Try retrieve matching decorator
             TokenDecorator decorator = config.flavour.tokenDecorators.get(this.getTokenType());
 
@@ -52,11 +98,25 @@ public class ItalicToken extends Token {
                 out.append(temp);
             }
 
-            pos = b;
+            pos = end;
         } else {
             out.append(in.charAt(pos));
         }
 
         return pos;
+    }
+
+    private int getEndState(String in, int pos) {
+        char c = in.charAt(pos);
+
+        if(c == '*') {
+            return CLOSE_STAR;
+        }
+
+        if(c == '_') {
+            return CLOSE_UNDERSCORE;
+        }
+
+        return CLOSE;
     }
 }

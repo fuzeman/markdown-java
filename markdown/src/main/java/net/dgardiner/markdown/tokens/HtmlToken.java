@@ -12,9 +12,9 @@ public class HtmlToken extends Token {
     public HtmlToken() { super("html"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '<' && trailing[0] != '<') {
-            return 1;
+            return state;
         }
 
         return 0;
@@ -121,8 +121,7 @@ public class HtmlToken extends Token {
         }
 
         // Check for inline html
-        if(start + 2 < in.length())
-        {
+        if(start + 2 < in.length()) {
             temp.setLength(0);
             return Utils.readXML(out, in, start, config.safeMode);
         }

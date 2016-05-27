@@ -10,9 +10,9 @@ public class SuperToken extends Token {
     public SuperToken() { super("super"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '^' && leading[0] != '^' && trailing[0] != '^') {
-            return 1;
+            return state;
         }
 
         return 0;

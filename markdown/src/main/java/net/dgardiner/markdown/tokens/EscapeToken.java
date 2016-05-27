@@ -35,9 +35,9 @@ public class EscapeToken extends Token {
     public EscapeToken() { super("escape", -10000); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '\\' && characters.contains(trailing[0])) {
-            return 1;
+            return state;
         }
 
         return 0;

@@ -1,8 +1,8 @@
 package net.dgardiner.markdown.tokens;
 
 import net.dgardiner.markdown.core.Configuration;
-import net.dgardiner.markdown.core.types.TokenType;
 import net.dgardiner.markdown.core.Emitter;
+import net.dgardiner.markdown.core.types.TokenType;
 import net.dgardiner.markdown.tokens.base.Token;
 
 public class QuoteToken extends Token {
@@ -12,7 +12,7 @@ public class QuoteToken extends Token {
     public QuoteToken() { super("quote"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '"') {
             if(leading[0] == ' ' && trailing[0] != ' ' && trailing[0] != '"') {
                 return QUOTE_OPEN;

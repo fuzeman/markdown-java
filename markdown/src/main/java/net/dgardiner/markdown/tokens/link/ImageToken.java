@@ -10,9 +10,9 @@ public class ImageToken extends BaseLinkToken {
     public ImageToken() { super("link.image"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '!' && trailing[0] == '[') {
-            return 1;
+            return state;
         }
 
         return 0;

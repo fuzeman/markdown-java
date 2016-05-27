@@ -11,9 +11,9 @@ public class LinkToken extends BaseLinkToken {
     public LinkToken() { super("link"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '[' && trailing[0] != '[') {
-            return 1;
+            return state;
         }
 
         return 0;

@@ -10,9 +10,9 @@ public class StrikeToken extends Token {
     public StrikeToken() { super("strike"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '~' && trailing[1] == '~') {
-            return 1;
+            return state;
         }
 
         return 0;

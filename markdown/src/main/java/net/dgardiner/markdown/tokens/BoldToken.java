@@ -6,35 +6,84 @@ import net.dgardiner.markdown.core.Emitter;
 import net.dgardiner.markdown.tokens.base.Token;
 import net.dgardiner.markdown.decorators.tokens.base.TokenDecorator;
 
+import java.util.logging.Logger;
+
 public class BoldToken extends Token {
-    public BoldToken() { super("bold"); }
+    public static final int OPEN_STAR        = (1 << 8) + 2;
+    public static final int OPEN_UNDERSCORE  = (2 << 8) + 2;
 
-    @Override
-    public int match(char value, char[] leading, char[] trailing) {
-        if (value != '*' && value != '_') {
-            return 0;
-        }
+    public static final int CLOSE_STAR       = (1 << 8) + 3;
+    public static final int CLOSE_UNDERSCORE = (2 << 8) + 3;
 
-        // Ensure there is at least two characters
-        if(trailing[0] == value && (leading[0] != ' ' || trailing[1] != ' ')) {
-            return 1;
-        }
+    private final boolean underscoreSpacing;
 
-        return 0;
+    public BoldToken() {
+        super("bold");
+
+        this.underscoreSpacing = false;
+    }
+
+    public BoldToken(boolean underscoreSpacing) {
+        super("bold");
+
+        this.underscoreSpacing = underscoreSpacing;
     }
 
     @Override
-    public boolean isProcessed(TokenType current, TokenType matched) {
-        return current.getId().equals("default:italic") && matched.equals(getTokenType());
+    public int match(char value, char[] leading, char[] trailing, int state) {
+        if (value != '*' && value != '_') {
+            return NONE;
+        }
+
+        // Star
+        if(value == '*') {
+            int side = state & 0x7f;
+
+            if(side == CLOSE && trailing[1] == '*') {
+                return NONE;
+            }
+
+            if(trailing[0] == '*') {
+                return state == GENERIC ? OPEN_STAR : CLOSE_STAR;
+            }
+
+            return NONE;
+        }
+
+        // Underscore
+        if(trailing[0] != '_') {
+            return NONE;
+        }
+
+        int side = state & 0x7f;
+
+        if(side == CLOSE && trailing[1] == '_') {
+            return NONE;
+        }
+
+        if(underscoreSpacing) {
+            if (leading[0] == ' ') {
+                return OPEN_UNDERSCORE;
+            }
+
+            if (trailing[1] == ' ') {
+                return CLOSE_UNDERSCORE;
+            }
+        } else {
+            return state == GENERIC ? OPEN_UNDERSCORE : CLOSE_UNDERSCORE;
+        }
+
+        return NONE;
     }
 
     @Override
     public int process(Configuration config, Emitter emitter, final StringBuilder temp, final StringBuilder out, String in, int pos, TokenType tokenType) {
         temp.setLength(0);
 
-        int b = emitter.recursiveEmitLine(temp, in, pos + 2, tokenType);
+        int endState = getEndState(in, pos);
+        int end = emitter.recursiveEmitLine(temp, in, pos + 2, tokenType.withState(endState), endState);
 
-        if(b > 0) {
+        if(end > 0) {
             // Try retrieve matching decorator
             TokenDecorator decorator = config.flavour.tokenDecorators.get(this.getTokenType());
 
@@ -49,11 +98,25 @@ public class BoldToken extends Token {
                 out.append(temp);
             }
 
-            pos = b + 1;
+            pos = end + 1;
         } else {
             out.append(in.charAt(pos));
         }
 
         return pos;
+    }
+
+    private int getEndState(String in, int pos) {
+        char c = in.charAt(pos);
+
+        if(c == '*') {
+            return CLOSE_STAR;
+        }
+
+        if(c == '_') {
+            return CLOSE_UNDERSCORE;
+        }
+
+        return CLOSE;
     }
 }

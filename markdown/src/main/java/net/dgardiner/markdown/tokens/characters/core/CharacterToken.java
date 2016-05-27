@@ -17,7 +17,7 @@ public abstract class CharacterToken extends Token {
     }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == this.token.charAt(0)) {
             for(int i = 1; i < this.token.length(); ++i) {
                 if(trailing[i - 1] != this.token.charAt(i)) {
@@ -25,7 +25,7 @@ public abstract class CharacterToken extends Token {
                 }
             }
 
-            return 1;
+            return state;
         }
 
         return 0;

@@ -11,9 +11,9 @@ public class EntityToken extends Token {
     public EntityToken() { super("entity"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '&') {
-            return 1;
+            return state;
         }
 
         return 0;

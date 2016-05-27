@@ -172,14 +172,26 @@ public class Emitter
      * @return The position of the matching Token or -1 if token was NONE or no
      *         Token could be found.
      */
-    public int recursiveEmitLine(final StringBuilder out, final String in, int start, TokenType tokenType)
-    {
+
+    public int recursiveEmitLine(final StringBuilder out, final String in, int start, TokenType tokenType) {
+        return recursiveEmitLine(out, in, start, tokenType, false);
+    }
+
+    public int recursiveEmitLine(final StringBuilder out, final String in, int start, TokenType tokenType, boolean raw) {
+        return recursiveEmitLine(out, in, start, tokenType, raw, 1);
+    }
+
+    public int recursiveEmitLine(final StringBuilder out, final String in, int start, TokenType tokenType, int state) {
+        return recursiveEmitLine(out, in, start, tokenType, false, state);
+    }
+
+    public int recursiveEmitLine(final StringBuilder out, final String in, int start, TokenType tokenType, boolean raw, int state) {
         int pos = start, a, b;
         final StringBuilder temp = new StringBuilder();
 
         while(pos < in.length()) {
             // Detect token type
-            final TokenType mt = this.getToken(in, pos);
+            final TokenType mt = this.getToken(in, pos, state);
 
             // Retrieve token handler
             Token token = config.flavour.tokens.get(mt);
@@ -188,11 +200,10 @@ public class Emitter
             if(!tokenType.equals(TokenType.NONE) && (mt.equals(tokenType) || (token != null && token.isProcessed(tokenType, mt))))
                 return pos;
 
-            if(token != null) {
-                // Process token
+            // Process token
+            if(token != null && !raw) {
                 pos = token.process(config, this, temp, out, in, pos, mt);
             } else {
-                // Basic text
                 out.append(in.charAt(pos));
             }
 
@@ -223,8 +234,11 @@ public class Emitter
      *            Starting position.
      * @return The Token.
      */
-    private TokenType getToken(final String in, final int pos)
-    {
+    private TokenType getToken(final String in, final int pos) {
+        return getToken(in, pos, 1);
+    }
+
+    private TokenType getToken(final String in, final int pos, final int state) {
         final char value = whitespaceToSpace(in.charAt(pos));
 
         final char[] leading = new char[] {
@@ -239,10 +253,10 @@ public class Emitter
 
         // Try detect token at current cursor position
         for(Token token : config.flavour.tokens.getOrdered()) {
-            int state = token.match(value, leading, trailing);
+            int result = token.match(value, leading, trailing, state);
 
-            if(state != 0) {
-                return token.getTokenType(state);
+            if(result != 0) {
+                return token.getTokenType(result);
             }
         }
 

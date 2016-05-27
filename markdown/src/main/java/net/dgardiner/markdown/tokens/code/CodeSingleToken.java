@@ -11,9 +11,9 @@ public class CodeSingleToken extends Token {
     public CodeSingleToken() { super("code.single"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '`' && trailing[0] != '`') {
-            return 1;
+            return state;
         }
 
         return 0;

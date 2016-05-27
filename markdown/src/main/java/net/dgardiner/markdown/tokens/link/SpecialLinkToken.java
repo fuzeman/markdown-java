@@ -12,7 +12,7 @@ public class SpecialLinkToken extends Token {
     public SpecialLinkToken() { super("link.special"); }
 
     @Override
-    public int match(char value, char[] leading, char[] trailing) {
+    public int match(char value, char[] leading, char[] trailing, int state) {
         if(value == '[' && trailing[0] == '[') {
             return LINK_OPEN;
         }
