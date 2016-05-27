@@ -8,11 +8,7 @@ public class ExtendedFlavour extends BasicFlavour {
     public ExtendedFlavour() {
         super();
 
-        // Register tokens
-        register(new QuoteToken());
-
         // Register characters
-        register(new EllipsisToken());
         register(new EnDashToken());
     }
 }
