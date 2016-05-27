@@ -20,7 +20,7 @@ The MarkdownView itself extends Android webview and adds the nessery logic to pa
 
 ## Usage
 
-Add MarkdownView to your layout: 
+Add MarkdownView to your layout:
 
 ```xml
     <us.feras.mdv.MarkdownView
@@ -29,7 +29,7 @@ Add MarkdownView to your layout:
         android:id="@+id/markdownView" />
 ```
 
-and reference it in your Activity/Fragment:  
+and reference it in your Activity/Fragment:
 
 ```java
 MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownView);
@@ -52,7 +52,7 @@ You could also create the view by code. Below an example of how to set the whole
 
 ## Demo App and Code Sample
 
-The above screenshots taking from the demo app which could be found here. The demo app include code to demonstrate: 
+The above screenshots taking from the demo app which could be found here. The demo app include code to demonstrate:
 
 - Loading Local Markdown File. 
 - Loading Remote Markdown File. 
@@ -60,22 +60,22 @@ The above screenshots taking from the demo app which could be found here. The de
 - Live Preview sample code (similar to [Marked Mac app](http://marked2app.com/))
 - Themes
 
-## Loading Markdown text or file: 
+## Loading Markdown text or file:
 
 - `loadMarkdown(String text)`:
-Using this method will result in loading md string to the MarkdownView and displaying it as HTML. 
+Using this method will result in loading md string to the MarkdownView and displaying it as HTML.
 
  
 - `loadMarkdownFile(String url)`:
-You can use this method to load local or online files. 
+You can use this method to load local or online files.
 
-To load a local file, you have to add it to your assets folder and pass a url that start with "file:///android_asset/" : 
+To load a local file, you have to add it to your assets folder and pass a url that start with "file:///android_asset/":
 
 ```java
 markdownView.loadMarkdownFile("file:///android_asset/myFile.md");
 ```
 
-To load a remote file you need to pass the full url :    
+To load a remote file you need to pass the full url:
 
 ```java
 markdownView.loadMarkdownFile("http://www.my-site.com/myFile.md");
@@ -83,21 +83,21 @@ markdownView.loadMarkdownFile("http://www.my-site.com/myFile.md");
 
 ## Theming
 
-You could apply custom CSS to the MarkdownView. Example: 
+You could apply custom CSS to the MarkdownView. Example:
 
 ```java
 markdownView.loadMarkdownFile("file:///android_asset/hello.md","file:///android_asset/MyCustomTheme.css");
 ```
 You could take a look at CSS example [here](https://github.com/falnatsheh/MarkdownView/tree/master/MarkdownViewDemo/assets/markdown_css_themes), you could also view them in the sample app.
 
-## ChangeLog: 
+## ChangeLog:
 
 - **MarkdownView 1.1.0**:
 	- Support Loading Markdown file from assets subfolders (Thanks [@echodjb](https://github.com/DiegoRosado)). 
 - **MarkdownView 1.0.0**:
 	- Convert to Gradle Project (Avillable now on [jCenter](https://bintray.com/falnatsheh/maven/MarkdownView/view)). 
 	- Fix CSS Issue (Thanks [@swanson](https://github.com/swanson) & [@echodjb](https://github.com/echodjb)). 
-	- Update demo app.  
+	- Update demo app.
 
 						
 ## License
