@@ -18,7 +18,7 @@ public class CodeBlock extends Block {
 
     @Override
     public boolean isMatch(Line line, Block parent) {
-        return line.leading > 3;
+        return line.leading > 3 && line.prevEmpty;
     }
 
     @Override
