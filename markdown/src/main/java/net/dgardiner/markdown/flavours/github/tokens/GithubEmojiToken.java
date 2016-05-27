@@ -30,7 +30,7 @@ public class GithubEmojiToken extends Token {
     public int process(Configuration config, Emitter emitter, final StringBuilder temp, final StringBuilder out, String in, int pos, TokenType tokenType) {
         temp.setLength(0);
 
-        int b = emitter.recursiveEmitLine(temp, in, pos + 2, tokenType);
+        int b = emitter.recursiveEmitLine(temp, in, pos + 2, tokenType, true);
 
         if(b > 0) {
             String key = in.substring(pos + 1, b);
