@@ -1,0 +1,28 @@
+<p>Traceback (most recent call last):<br>
+File "C:\Python33\lib\site-packages\requests\packages\urllib3\connectionpool.py", line 421, in urlopen<br>
+body=body, headers=headers)<br>
+File "C:\Python33\lib\site-packages\requests\packages\urllib3\connectionpool.py", line 273, in <em>make</em>request<br>
+conn.request(method, url, **httplib_request_kw)<br>
+File "C:\Python33\lib\http\client.py", line 1049, in request<br>
+self._send_request(method, url, body, headers)<br>
+File "C:\Python33\lib\http\client.py", line 1087, in <em>send</em>request<br>
+self.endheaders(body)<br>
+File "C:\Python33\lib\http\client.py", line 1045, in endheaders<br>
+self._send_output(message_body)<br>
+File "C:\Python33\lib\http\client.py", line 890, in <em>send</em>output<br>
+self.send(msg)<br>
+File "C:\Python33\lib\http\client.py", line 828, in send<br>
+self.connect()<br>
+File "C:\Python33\lib\site-packages\requests\packages\urllib3\connectionpool.py", line 104, in connect<br>
+ssl_version=resolved_ssl_version)<br>
+File "C:\Python33\lib\site-packages\requests\packages\urllib3\util.py", line 329, in ssl_wrap_socket<br>
+return context.wrap_socket(sock, server_hostname=server_hostname)<br>
+File "C:\Python33\lib\ssl.py", line 210, in wrap_socket<br>
+<em>context=self)<br>
+File "C:\Python33\lib\ssl.py", line 310, in <strong>init</strong><br>
+raise x<br>
+File "C:\Python33\lib\ssl.py", line 306, in <strong>init</strong><br>
+self.do</em>handshake()<br>
+File "C:\Python33\lib\ssl.py", line 513, in do_handshake<br>
+self._sslobj.do_handshake()<br>
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host</p>
