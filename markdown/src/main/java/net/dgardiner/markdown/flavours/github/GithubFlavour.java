@@ -13,6 +13,7 @@ import net.dgardiner.markdown.flavours.github.decorators.tokens.GithubEmojiDecor
 import net.dgardiner.markdown.flavours.github.decorators.tokens.GithubUsernameDecorator;
 import net.dgardiner.markdown.flavours.github.tokens.GithubEmojiToken;
 import net.dgardiner.markdown.flavours.github.tokens.GithubUsernameToken;
+import net.dgardiner.markdown.tokens.link.AutoLinkToken;
 
 public class GithubFlavour extends ExtendedFlavour {
     public GithubFlavour() {
@@ -33,6 +34,8 @@ public class GithubFlavour extends ExtendedFlavour {
         register(new GithubTaskListItemDecorator());
 
         // Register tokens
+        register(new AutoLinkToken());
+
         register(new GithubEmojiToken());
         register(new GithubUsernameToken());
 
